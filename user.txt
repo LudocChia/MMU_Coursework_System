@@ -1,5 +1,5 @@
 0|Admin|Admin|1|None|None
-1|MMU22222|Muhammad Loqman Bin Samat|1|Male|1A
+1|MMU22222|Muhammad Loqman Bin Samat|1|Male|5A
 1|MMU33333|Nur Liyana Binit Rosli|1|Female|2A
 1|MMU44444|Isaiah A/L James|1|Male|1B
 1|MMU55555|Abd Rahim Bin Abd Rahman|1|Male|4A
