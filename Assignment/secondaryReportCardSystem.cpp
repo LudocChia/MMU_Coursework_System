@@ -248,19 +248,19 @@ public:
             switch (choice)
             {
             case 1:
-                // Implement string searching functionality
+                // string searching
                 break;
             case 2:
-                // Implement ternary searching functionality
+                // ternary searching
                 break;
             case 3:
-                // Implement cocktail sorting functionality
+                // cocktail sorting
                 break;
             case 4:
-                // Implement heap sorting functionality
+                // heap sorting
                 break;
             case 5:
-                cout << "\033[1;32m    Returned Successfully.\033[0m" << endl;
+                cout << "\033[1;32mReturned Successfully.\033[0m" << endl;
                 system("pause");
                 system("cls");
                 return;
