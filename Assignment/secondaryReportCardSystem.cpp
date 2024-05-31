@@ -232,12 +232,17 @@ public:
         loadStudents("students.txt", students);
 
         int searchChoice;
-        cout << "Choose the field to search by:" << endl;
+        system("cls");
+        cout << "================================================================================" << endl;
+        cout << "                                 SEARCH CATEGORY                                " << endl;
+        cout << "================================================================================" << endl;
+        cout << "Choose the category to search by:" << endl;
         cout << "[1] Student ID" << endl;
         cout << "[2] Student Name" << endl;
         cout << "[3] Student Class" << endl;
         cout << "[4] Subject" << endl;
         cout << "[5] Back to Assignment Menu" << endl;
+        cout << "================================================================================" << endl;
         cout << "Enter your choice: ";
         cin >> searchChoice;
 
@@ -247,33 +252,11 @@ public:
         }
 
         string searchString;
-        string searchSubject;
-        int subjectIndex = -1;
-        if (searchChoice >= 1 && searchChoice <= 3)
+        if (searchChoice >= 1 && searchChoice <= 4)
         {
             cout << "Enter the string to search for: ";
             cin.ignore();
             getline(cin, searchString);
-        }
-        else if (searchChoice == 4)
-        {
-            cout << "Enter the subject to search for: ";
-            cin.ignore();
-            getline(cin, searchSubject);
-            string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
-            for (int i = 0; i < 5; ++i)
-            {
-                if (subjects[i] == searchSubject)
-                {
-                    subjectIndex = i;
-                    break;
-                }
-            }
-            if (subjectIndex == -1)
-            {
-                cout << "Invalid subject name!" << endl;
-                return;
-            }
         }
         else
         {
@@ -301,52 +284,54 @@ public:
             else if (searchChoice == 3 && student.className.find(searchString) != string::npos)
                 match = true;
             else if (searchChoice == 4)
-                match = true;
+            {
+                for (int i = 0; i < 5; ++i)
+                {
+                    if (subjects[i].find(searchString) != string::npos)
+                    {
+                        cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[i] << " | ";
+                        if (student.grades[i] < 40.0f)
+                        {
+                            cout << "\033[1;31m" << setw(6) << right << student.grades[i];
+                        }
+                        else
+                        {
+                            cout << "\033[1;32m" << setw(6) << right << student.grades[i];
+                        }
+                        cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[i]) << " |" << endl;
+                        cout << "----------------------------------------------------------------------------------------------" << endl;
+                        found = true;
+                    }
+                }
+            }
 
-            if (match)
+            if (match && searchChoice != 4)
             {
                 found = true;
-                if (searchChoice == 4)
+                cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[0] << " | ";
+                if (student.grades[0] < 40.0f)
                 {
-                    // Display only the matched subject
-                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[subjectIndex] << " | ";
-                    if (student.grades[subjectIndex] < 40.0f)
-                    {
-                        cout << "\033[1;31m" << setw(6) << right << student.grades[subjectIndex];
-                    }
-                    else
-                    {
-                        cout << "\033[1;32m" << setw(6) << right << student.grades[subjectIndex];
-                    }
-                    cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[subjectIndex]) << " |" << endl;
-                    cout << "----------------------------------------------------------------------------------------------" << endl;
+                    cout << "\033[1;31m" << setw(6) << right << student.grades[0];
                 }
                 else
                 {
-                    // Display all subjects
-                    for (int i = 0; i < 5; ++i)
-                    {
-                        if (i == 0)
-                        {
-                            cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[i] << " | ";
-                        }
-                        else
-                        {
-                            cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[i] << " | ";
-                        }
-
-                        if (student.grades[i] < 40.0f)
-                        {
-                            cout << "\033[1;31m" << setw(4) << right << fixed << setprecision(1) << student.grades[i] << "%  ";
-                        }
-                        else
-                        {
-                            cout << "\033[1;32m" << setw(4) << right << fixed << setprecision(1) << student.grades[i] << "%  ";
-                        }
-                        cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[i]) << " |" << endl;
-                    }
-                    cout << "----------------------------------------------------------------------------------------------" << endl;
+                    cout << "\033[1;32m" << setw(6) << right << student.grades[0];
                 }
+                cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[0]) << " |" << endl;
+                for (int i = 1; i < 5; ++i)
+                {
+                    cout << "|     |                 |                    |          | " << setw(15) << left << subjects[i] << " | ";
+                    if (student.grades[i] < 40.0f)
+                    {
+                        cout << "\033[1;31m" << setw(6) << right << student.grades[i];
+                    }
+                    else
+                    {
+                        cout << "\033[1;32m" << setw(6) << right << student.grades[i];
+                    }
+                    cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[i]) << " |" << endl;
+                }
+                cout << "----------------------------------------------------------------------------------------------" << endl;
             }
         }
 
@@ -491,10 +476,10 @@ public:
 
     void assignmentMenu()
     {
-        system("cls");
         int choice = 0;
         do
         {
+            system("cls");
             cout << "================================================================================" << endl;
             cout << "                                 ASSIGNMENT MENU                                " << endl;
             cout << "================================================================================" << endl;
@@ -506,6 +491,7 @@ public:
             cout << "================================================================================" << endl;
             cout << "Please Enter Your Choice: ";
             cin >> choice;
+            system("cls");
 
             switch (choice)
             {
