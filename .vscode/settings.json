@@ -2,8 +2,6 @@
     "files.associations": {
         "iostream": "cpp",
         "ostream": "cpp",
-        "iomanip": "cpp",
-        "ios": "cpp",
-        "unordered_set": "cpp"
+        "functional": "cpp"
     }
 }
