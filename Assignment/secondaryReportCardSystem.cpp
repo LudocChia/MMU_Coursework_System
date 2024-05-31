@@ -234,7 +234,7 @@ public:
         int searchChoice;
         system("cls");
         cout << "================================================================================" << endl;
-        cout << "                                 Search Category                                " << endl;
+        cout << "                                 SEARCH CATEGORY                                " << endl;
         cout << "================================================================================" << endl;
         cout << "Choose the category to search by:" << endl;
         cout << "[1] Student ID" << endl;
@@ -289,68 +289,49 @@ public:
                 {
                     if (subjects[i].find(searchString) != string::npos)
                     {
-                        match = true;
-                        break;
+                        cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[i] << " | ";
+                        if (student.grades[i] < 40.0f)
+                        {
+                            cout << "\033[1;31m" << setw(6) << right << student.grades[i];
+                        }
+                        else
+                        {
+                            cout << "\033[1;32m" << setw(6) << right << student.grades[i];
+                        }
+                        cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[i]) << " |" << endl;
+                        cout << "----------------------------------------------------------------------------------------------" << endl;
+                        found = true;
                     }
                 }
             }
 
-            if (match)
+            if (match && searchChoice != 4)
             {
                 found = true;
-                if (searchChoice == 4)
+                cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[0] << " | ";
+                if (student.grades[0] < 40.0f)
                 {
-                    for (int i = 0; i < 5; ++i)
-                    {
-                        if (subjects[i].find(searchString) != string::npos)
-                        {
-                            cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[i] << " | ";
-                            if (student.grades[i] < 40.0f)
-                            {
-                                cout << "\033[1;31m" << setw(6) << right << student.grades[i];
-                            }
-                            else
-                            {
-                                cout << "\033[1;32m" << setw(6) << right << student.grades[i];
-                            }
-                            cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[i]) << " |" << endl;
-                            if (i < 4)
-                            {
-                                cout << "----------------------------------------------------------------------------------------------" << endl;
-                            }
-                        }
-                    }
+                    cout << "\033[1;31m" << setw(6) << right << student.grades[0];
                 }
                 else
                 {
-                    // Display all subjects
-                    for (int i = 0; i < 5; ++i)
-                    {
-                        if (i == 0)
-                        {
-                            cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[i] << " | ";
-                        }
-                        else
-                        {
-                            cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[i] << " | ";
-                        }
-
-                        if (student.grades[i] < 40.0f)
-                        {
-                            cout << "\033[1;31m" << setw(4) << right << fixed << setprecision(1) << student.grades[i] << "  ";
-                        }
-                        else
-                        {
-                            cout << "\033[1;32m" << setw(4) << right << fixed << setprecision(1) << student.grades[i] << "  ";
-                        }
-                        cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[i]) << " |" << endl;
-
-                        if (i < 4)
-                        {
-                            cout << "----------------------------------------------------------------------------------------------" << endl;
-                        }
-                    }
+                    cout << "\033[1;32m" << setw(6) << right << student.grades[0];
                 }
+                cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[0]) << " |" << endl;
+                for (int i = 1; i < 5; ++i)
+                {
+                    cout << "|     |                 |                    |          | " << setw(15) << left << subjects[i] << " | ";
+                    if (student.grades[i] < 40.0f)
+                    {
+                        cout << "\033[1;31m" << setw(6) << right << student.grades[i];
+                    }
+                    else
+                    {
+                        cout << "\033[1;32m" << setw(6) << right << student.grades[i];
+                    }
+                    cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[i]) << " |" << endl;
+                }
+                cout << "----------------------------------------------------------------------------------------------" << endl;
             }
         }
 
