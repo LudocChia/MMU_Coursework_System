@@ -350,6 +350,137 @@ public:
         cout << "==============================================================================================" << endl;
         system("pause");
     }
+    
+    void heapify(vector<StudentInfo> &students, int n, int i, int sortChoice, int subjectIndex = 0) 
+    {
+        int largest = i;
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
+
+        switch (sortChoice) 
+        {
+            case 1:
+                if (left < n && students[left].studentId > students[largest].studentId)
+                    largest = left;
+                if (right < n && students[right].studentId > students[largest].studentId)
+                    largest = right;
+                break;
+            case 2:
+                if (left < n && students[left].studentName > students[largest].studentName)
+                    largest = left;
+                if (right < n && students[right].studentName > students[largest].studentName)
+                    largest = right;
+                break;
+            case 3:
+                if (left < n && students[left].className > students[largest].className)
+                    largest = left;
+                if (right < n && students[right].className > students[largest].className)
+                    largest = right;
+                break;
+            case 4:
+                if (left < n && students[left].grades[subjectIndex] > students[largest].grades[subjectIndex])
+                    largest = left;
+                if (right < n && students[right].grades[subjectIndex] > students[largest].grades[subjectIndex])
+                    largest = right;
+                break;
+            default:
+                break;
+        }
+
+        if (largest != i) 
+        {
+            swap(students[i], students[largest]);
+            heapify(students, n, largest, sortChoice, subjectIndex);
+        }
+    }
+
+    void heapSort() 
+    {
+        vector<StudentInfo> students;
+        loadStudents("students.txt", students);
+
+        int sortChoice;
+        cout << "Choose the field to sort by:" << endl;
+        cout << "[1] Student ID" << endl;
+        cout << "[2] Student Name" << endl;
+        cout << "[3] Student Class" << endl;
+        cout << "[4] Subject Mark" << endl;
+        cout << "[5] Back to Assignment Menu" << endl;
+        cout << "Enter your choice: ";
+        cin >> sortChoice;
+
+        if (sortChoice == 5) 
+        {
+            return;
+        }
+
+        int subjectIndex = 0;
+        if (sortChoice == 4) 
+        {
+            cout << "Choose the subject to sort by:" << endl;
+            cout << "[0] Bahasa Melayu" << endl;
+            cout << "[1] English" << endl;
+            cout << "[2] Mathematics" << endl;
+            cout << "[3] History" << endl;
+            cout << "[4] Science" << endl;
+            cout << "Enter your choice: ";
+            cin >> subjectIndex;
+        }
+
+        int n = students.size();
+
+        for (int i = n / 2 - 1; i >= 0; i--) 
+        {
+            heapify(students, n, i, sortChoice, subjectIndex);
+        }
+
+        for (int i = n - 1; i > 0; i--) 
+        {
+            swap(students[0], students[i]);
+            heapify(students, i, 0, sortChoice, subjectIndex);
+        }
+
+        cout << "==============================================================================================" << endl;
+        cout << "                                SORTED RESULT" << endl;
+        cout << "==============================================================================================" << endl;
+        cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
+        cout << "----------------------------------------------------------------------------------------------" << endl;
+
+        string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
+        int no = 1;
+
+        for (int i = 0; i < students.size(); ++i) 
+        {
+            const StudentInfo &student = students[i];
+            for (int j = 0; j < 5; ++j) 
+            {
+                if (j == 0) 
+                {
+                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[j] << " | ";
+                } 
+                else 
+                {
+                    cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[j] << " | ";
+                }
+
+                if (student.grades[j] < 40.0f) 
+                {
+                    cout << "\033[1;31m" << setw(8) << left << student.grades[j];
+                } 
+                else 
+                {
+                    cout << "\033[1;32m" << setw(8) << left << student.grades[j];
+                }
+                cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[j]) << " |" << endl;
+            }
+            if (i != students.size() - 1) 
+            {
+                cout << "----------------------------------------------------------------------------------------------" << endl;
+            }
+        }
+        cout << "==============================================================================================" << endl;
+        system("pause");
+    }
 
     void assignmentMenu()
     {
@@ -382,7 +513,7 @@ public:
                 // cocktail sorting
                 break;
             case 4:
-                // heap sorting
+                heapSort();
                 break;
             case 5:
                 cout << "\033[1;32mReturned Successfully.\033[0m" << endl;
