@@ -1,11 +1,10 @@
 #include <iostream>
-#include <string>
 #include <vector>
+#include <string>
 #include <fstream>
 #include <sstream>
 #include <iomanip>
-#include <limits>
-#include <algorithm>
+#include <ctime>
 
 using namespace std;
 
@@ -13,6 +12,7 @@ struct StudentInfo
 {
     string studentId;
     string studentName;
+    string className;
     vector<float> grades; // 5 grades for 5 subjects
 
     StudentInfo()
@@ -44,6 +44,7 @@ public:
 
             getline(ss, student.studentId, '|');
             getline(ss, student.studentName, '|');
+            getline(ss, student.className, '|');
             for (int i = 0; i < 5; ++i)
             {
                 getline(ss, gradeStr, '|');
@@ -62,7 +63,7 @@ public:
 
         for (const auto &student : students)
         {
-            file << student.studentId << "|" << student.studentName;
+            file << student.studentId << "|" << student.studentName << "|" << student.className;
             for (const auto &grade : student.grades)
             {
                 file << "|" << grade;
@@ -125,8 +126,10 @@ public:
             cout << "                            ADD STUDENT AND GRADES MENU                         " << endl;
             cout << "================================================================================" << endl;
 
+            cout << "Please enter student information" << endl;
+
             StudentInfo newStudent;
-            cout << "Enter Student ID  : ";
+            cout << "Student ID   : ";
             cin >> newStudent.studentId;
 
             if (isDuplicateId(students, newStudent.studentId))
@@ -148,9 +151,12 @@ public:
                 }
             }
 
-            cout << "Enter Student Name: ";
+            cout << "Student Name : ";
             cin.ignore();
             getline(cin, newStudent.studentName);
+
+            cout << "Student Class: ";
+            getline(cin, newStudent.className);
 
             cout << "--------------------------------------------------------------------------------" << endl;
             cout << "Please enter subject mark:" << endl;
@@ -158,15 +164,14 @@ public:
             string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
             for (int i = 0; i < 5; ++i)
             {
-                cout << setw(20) << left << subjects[i] << ": ";
+                cout << setw(13) << left << subjects[i] << ": ";
                 cin >> newStudent.grades[i];
             }
 
             students.push_back(newStudent);
             saveStudents(students, "students.txt");
             cout << "================================================================================" << endl;
-            cout << "Student and grades added successfully." << endl;
-            cout << "\033[1;32m    Returned Successfully.\033[0m" << endl;
+            cout << "\033[1;32mStudent and grades added successfully.\033[0m" << endl;
             system("pause");
             system("cls");
             return;
@@ -180,11 +185,11 @@ public:
         vector<StudentInfo> students;
         loadStudents("students.txt", students);
 
-        cout << "================================================================================" << endl;
-        cout << "                                    CLASS GRADES                                " << endl;
-        cout << "================================================================================" << endl;
-        cout << "| No. | Student ID     | Student Name      | Subject        | Mark  | Grade  |" << endl;
-        cout << "--------------------------------------------------------------------------------" << endl;
+        cout << "==============================================================================================" << endl;
+        cout << "                                CLASS GRADES (Unsorted Data)" << endl;
+        cout << "==============================================================================================" << endl;
+        cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
+        cout << "----------------------------------------------------------------------------------------------" << endl;
 
         string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
         int no = 1;
@@ -194,32 +199,70 @@ public:
             {
                 if (i == 2)
                 {
-                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(15) << left << subjects[i] << " | " << setw(4) << left;
+                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[i] << " | ";
                 }
                 else
                 {
-                    cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(15) << left << subjects[i] << " | " << setw(4) << left;
+                    cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[i] << " | ";
                 }
 
                 if (student.grades[i] < 40.0f)
                 {
-                    cout << "\033[1;31m" << setw(4) << left << student.grades[i];
+                    cout << "\033[1;31m" << setw(4) << right << fixed << setprecision(1) << student.grades[i] << "%  ";
                 }
                 else
                 {
-                    cout << "\033[1;32m" << setw(4) << left << student.grades[i];
+                    cout << "\033[1;32m" << setw(4) << right << fixed << setprecision(1) << student.grades[i] << "%  ";
                 }
                 cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[i]) << " |" << endl;
             }
             if (&student != &students.back())
             {
-                cout << "--------------------------------------------------------------------------------" << endl;
+                cout << "----------------------------------------------------------------------------------------------" << endl;
             }
         }
-        cout << "================================================================================" << endl;
-        cout << "\033[1;32m    Returned Successfully.\033[0m" << endl;
+        cout << "==============================================================================================" << endl;
         system("pause");
         system("cls");
+    }
+
+    void stringSearch()
+    {
+        vector<StudentInfo> students;
+        loadStudents("students.txt", students);
+
+        string searchString;
+        cout << "Enter the string to search for: ";
+        cin.ignore();
+        getline(cin, searchString);
+
+        bool found = false;
+        for (const auto &student : students)
+        {
+            if (student.studentId.find(searchString) != string::npos ||
+                student.studentName.find(searchString) != string::npos ||
+                student.className.find(searchString) != string::npos)
+            {
+                found = true;
+                cout << "================================================================================" << endl;
+                cout << "Student ID   : " << student.studentId << endl;
+                cout << "Student Name : " << student.studentName << endl;
+                cout << "Student Class: " << student.className << endl;
+                cout << "Grades       : ";
+                for (const auto &grade : student.grades)
+                {
+                    cout << grade << " ";
+                }
+                cout << endl;
+                cout << "================================================================================" << endl;
+            }
+        }
+
+        if (!found)
+        {
+            cout << "No student information found with the string: " << searchString << endl;
+        }
+        system("pause");
     }
 
     void assignmentMenu()
@@ -243,19 +286,19 @@ public:
             switch (choice)
             {
             case 1:
-                // Implement string searching functionality
+                stringSearch();
                 break;
             case 2:
-                // Implement ternary searching functionality
+                // ternary searching
                 break;
             case 3:
-                // Implement cocktail sorting functionality
+                // cocktail sorting
                 break;
             case 4:
-                // Implement heap sorting functionality
+                // heap sorting
                 break;
             case 5:
-                cout << "\033[1;32m    Returned Successfully.\033[0m" << endl;
+                cout << "\033[1;32mReturned Successfully.\033[0m" << endl;
                 system("pause");
                 system("cls");
                 return;
@@ -297,7 +340,7 @@ public:
                 assignmentMenu();
                 break;
             case 4:
-                cout << "\033[1;32mExited the system successfully.\033{0m" << endl;
+                cout << "\033[1;32mExited the system successfully.\033[0m" << endl;
                 return;
             default:
                 cout << "\033[1;31mInvalid Choice. Please Try Again.\033[0m" << endl;

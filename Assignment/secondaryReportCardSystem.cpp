@@ -1,11 +1,10 @@
 #include <iostream>
-#include <string>
 #include <vector>
+#include <string>
 #include <fstream>
 #include <sstream>
 #include <iomanip>
-#include <limits>
-#include <algorithm>
+#include <ctime>
 
 using namespace std;
 
@@ -209,11 +208,11 @@ public:
 
                 if (student.grades[i] < 40.0f)
                 {
-                    cout << "\033[1;31m" << setw(4) << right << fixed << setprecision(1) << student.grades[i] << "%  ";
+                    cout << "\033[1;31m" << setw(8) << left << student.grades[i];
                 }
                 else
                 {
-                    cout << "\033[1;32m" << setw(4) << right << fixed << setprecision(1) << student.grades[i] << "%  ";
+                    cout << "\033[1;32m" << setw(8) << left << student.grades[i];
                 }
                 cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[i]) << " |" << endl;
             }
@@ -225,6 +224,138 @@ public:
         cout << "==============================================================================================" << endl;
         system("pause");
         system("cls");
+    }
+
+    void stringSearch()
+    {
+        vector<StudentInfo> students;
+        loadStudents("students.txt", students);
+
+        int searchChoice;
+        cout << "Choose the field to search by:" << endl;
+        cout << "[1] Student ID" << endl;
+        cout << "[2] Student Name" << endl;
+        cout << "[3] Student Class" << endl;
+        cout << "[4] Subject" << endl;
+        cout << "[5] Back to Assignment Menu" << endl;
+        cout << "Enter your choice: ";
+        cin >> searchChoice;
+
+        if (searchChoice == 5)
+        {
+            return;
+        }
+
+        string searchString;
+        string searchSubject;
+        int subjectIndex = -1;
+        if (searchChoice >= 1 && searchChoice <= 3)
+        {
+            cout << "Enter the string to search for: ";
+            cin.ignore();
+            getline(cin, searchString);
+        }
+        else if (searchChoice == 4)
+        {
+            cout << "Enter the subject to search for: ";
+            cin.ignore();
+            getline(cin, searchSubject);
+            string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
+            for (int i = 0; i < 5; ++i)
+            {
+                if (subjects[i] == searchSubject)
+                {
+                    subjectIndex = i;
+                    break;
+                }
+            }
+            if (subjectIndex == -1)
+            {
+                cout << "Invalid subject name!" << endl;
+                return;
+            }
+        }
+        else
+        {
+            cout << "Invalid choice!" << endl;
+            return;
+        }
+
+        bool found = false;
+        string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
+        int no = 1;
+
+        cout << "==============================================================================================" << endl;
+        cout << "                                SEARCH RESULTS" << endl;
+        cout << "==============================================================================================" << endl;
+        cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
+        cout << "----------------------------------------------------------------------------------------------" << endl;
+
+        for (const auto &student : students)
+        {
+            bool match = false;
+            if (searchChoice == 1 && student.studentId.find(searchString) != string::npos)
+                match = true;
+            else if (searchChoice == 2 && student.studentName.find(searchString) != string::npos)
+                match = true;
+            else if (searchChoice == 3 && student.className.find(searchString) != string::npos)
+                match = true;
+            else if (searchChoice == 4)
+                match = true;
+
+            if (match)
+            {
+                found = true;
+                if (searchChoice == 4)
+                {
+                    // Display only the matched subject
+                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[subjectIndex] << " | ";
+                    if (student.grades[subjectIndex] < 40.0f)
+                    {
+                        cout << "\033[1;31m" << setw(6) << right << student.grades[subjectIndex];
+                    }
+                    else
+                    {
+                        cout << "\033[1;32m" << setw(6) << right << student.grades[subjectIndex];
+                    }
+                    cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[subjectIndex]) << " |" << endl;
+                    cout << "----------------------------------------------------------------------------------------------" << endl;
+                }
+                else
+                {
+                    // Display all subjects
+                    for (int i = 0; i < 5; ++i)
+                    {
+                        if (i == 0)
+                        {
+                            cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[i] << " | ";
+                        }
+                        else
+                        {
+                            cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[i] << " | ";
+                        }
+
+                        if (student.grades[i] < 40.0f)
+                        {
+                            cout << "\033[1;31m" << setw(4) << right << fixed << setprecision(1) << student.grades[i] << "%  ";
+                        }
+                        else
+                        {
+                            cout << "\033[1;32m" << setw(4) << right << fixed << setprecision(1) << student.grades[i] << "%  ";
+                        }
+                        cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[i]) << " |" << endl;
+                    }
+                    cout << "----------------------------------------------------------------------------------------------" << endl;
+                }
+            }
+        }
+
+        if (!found)
+        {
+            cout << "No student information found with the given criteria." << endl;
+        }
+        cout << "==============================================================================================" << endl;
+        system("pause");
     }
 
     void assignmentMenu()
@@ -248,7 +379,7 @@ public:
             switch (choice)
             {
             case 1:
-                // string searching
+                stringSearch();
                 break;
             case 2:
                 // ternary searching
