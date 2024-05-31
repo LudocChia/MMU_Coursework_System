@@ -144,7 +144,7 @@ public:
                 }
                 else
                 {
-                    cout << "\033[1;32m    Returned Successfully.\033[0m" << endl;
+                    cout << "\033[1;32mReturned Successfully.\033[0m" << endl;
                     system("pause");
                     system("cls");
                     return;
@@ -264,18 +264,20 @@ public:
             return;
         }
 
+        system("cls");
         bool found = false;
         string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
         int no = 1;
 
         cout << "==============================================================================================" << endl;
-        cout << "                                SEARCH RESULTS" << endl;
+        cout << "                                       SEARCH RESULTS" << endl;
         cout << "==============================================================================================" << endl;
         cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
         cout << "----------------------------------------------------------------------------------------------" << endl;
 
-        for (const auto &student : students)
+        for (size_t studentIndex = 0; studentIndex < students.size(); ++studentIndex)
         {
+            const auto &student = students[studentIndex];
             bool match = false;
             if (searchChoice == 1 && student.studentId.find(searchString) != string::npos)
                 match = true;
@@ -299,7 +301,10 @@ public:
                             cout << "\033[1;32m" << setw(6) << right << student.grades[i];
                         }
                         cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[i]) << " |" << endl;
-                        cout << "----------------------------------------------------------------------------------------------" << endl;
+                        if (studentIndex != students.size() - 1 || i != 4)
+                        {
+                            cout << "----------------------------------------------------------------------------------------------" << endl;
+                        }
                         found = true;
                     }
                 }
@@ -331,7 +336,10 @@ public:
                     }
                     cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[i]) << " |" << endl;
                 }
-                cout << "----------------------------------------------------------------------------------------------" << endl;
+                if (studentIndex != students.size() - 1)
+                {
+                    cout << "----------------------------------------------------------------------------------------------" << endl;
+                }
             }
         }
 
