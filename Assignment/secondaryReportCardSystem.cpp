@@ -444,6 +444,7 @@ public:
 
     void searchByStudentID(StudentInfo *students, int studentCount, const string &id)
     {
+        system("cls");
         int *results = new int[studentCount];
         int resultsCount = 0;
         ternarySearch(students, id, 0, studentCount - 1, results, resultsCount);
@@ -494,12 +495,11 @@ public:
             cout << "\033[1;31mStudent ID not found.\033[0m" << endl;
         }
         delete[] results;
-        system("pause");
-        system("cls");
     }
 
     void searchByStudentName(StudentInfo *students, int studentCount, const string &name)
     {
+        system("cls");
         int *results = new int[studentCount];
         int resultsCount = 0;
         ternarySearch(students, name, 0, studentCount - 1, results, resultsCount, true);
@@ -550,8 +550,7 @@ public:
             cout << "\033[1;31mStudent Name not found.\033[0m" << endl;
         }
         delete[] results;
-        system("pause");
-        system("cls");
+
     }
 
     void ternarySearchByClass(StudentInfo *students, const string &className, int left, int right, int *results, int &resultsCount)
@@ -599,6 +598,7 @@ public:
 
     void searchByClass(StudentInfo *students, int studentCount, const string &className)
     {
+        system("cls");
         int *results = new int[studentCount];
         int resultsCount = 0;
         ternarySearchByClass(students, className, 0, studentCount - 1, results, resultsCount);
@@ -649,8 +649,7 @@ public:
             cout << "\033[1;31mClass not found.\033[0m" << endl;
         }
         delete[] results;
-        system("pause");
-        system("cls");
+
     }
 
     void ternarySearchBySubject(StudentInfo *students, const string &subject, int subjectIndex, int left, int right, int *results, int &resultsCount)
@@ -698,6 +697,7 @@ public:
 
     void searchBySubject(StudentInfo *students, int studentCount, const string &subject)
     {
+        system("cls");
         int subjectIndex = -1;
         string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
 
@@ -748,8 +748,7 @@ public:
             cout << "\033[1;31mNo results found for subject \"" << subject << "\".\033[0m" << endl;
         }
         delete[] results;
-        system("pause");
-        system("cls");
+
     }
 
     void ternarySearchMenu()
