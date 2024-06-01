@@ -1,1 +1,1 @@
-display
+        int results[studentCount];
