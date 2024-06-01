@@ -12,14 +12,11 @@ struct StudentInfo
     string studentId;
     string studentName;
     string className;
-    float grades[5];
+    vector<float> grades; // 5 grades for 5 subjects
 
     StudentInfo()
     {
-        for (int i = 0; i < 5; ++i)
-        {
-            grades[i] = 0.0;
-        }
+        grades.resize(5, 0.0); // Initialize all grades to 0.0
     }
 };
 
@@ -248,6 +245,30 @@ public:
         system("cls");
     }
 
+    void cocktailSort()
+    {
+        int choice;
+        system("cls");
+        cout << "================================================================================"<<endl;
+        cout << "                                 SEARCH CATEGORY                                "<<endl;
+        cout << "================================================================================"<<endl;
+        cout << "Choose the category to sort by:"<<endl;
+        cout << "[1] Student ID"<<endl;
+        cout << "[2] Student Name"<<endl;
+        cout << "[3] Student Class"<<endl;
+        cout << "[4] Subject"<<endl;
+        cout << "[5] Back to Assignment Menu"<<endl;
+        cout << "================================================================================"<<endl;
+        cout << "Enter your choice: ";
+        cin>>choice;
+
+        if(choice == 5)
+            return;
+        else if(choice == 1)
+
+
+    }
+    
     void stringSearch()
     {
         StudentInfo *students = nullptr;
