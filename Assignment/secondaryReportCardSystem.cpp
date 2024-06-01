@@ -225,8 +225,32 @@ public:
         system("pause");
         system("cls");
     }
+
+    void cocktailSort()
+    {
+        int choice;
+        system("cls");
+        cout << "================================================================================"<<endl;
+        cout << "                                 SEARCH CATEGORY                                "<<endl;
+        cout << "================================================================================"<<endl;
+        cout << "Choose the category to sort by:"<<endl;
+        cout << "[1] Student ID"<<endl;
+        cout << "[2] Student Name"<<endl;
+        cout << "[3] Student Class"<<endl;
+        cout << "[4] Subject"<<endl;
+        cout << "[5] Back to Assignment Menu"<<endl;
+        cout << "================================================================================"<<endl;
+        cout << "Enter your choice: ";
+        cin>>choice;
+
+        if(choice == 5)
+            return;
+        else if(choice == 1)
+
+
+    }
     
-void stringSearch()
+    void stringSearch()
     {
         vector<StudentInfo> students;
         loadStudents("students.txt", students);
@@ -910,7 +934,7 @@ void stringSearch()
                 ternarySearch();
                 break;
             case 3:
-                // cocktail sorting
+                cocktailSort();
                 break;
             case 4:
                 heapSort();
