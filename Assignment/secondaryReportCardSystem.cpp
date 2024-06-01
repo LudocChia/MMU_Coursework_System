@@ -1,5 +1,4 @@
 #include <iostream>
-#include <vector>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -13,13 +12,11 @@ struct StudentInfo
     string studentId;
     string studentName;
     string className;
-    float grades[5]; // 5 grades for 5 subjects
+    vector<float> grades; // 5 grades for 5 subjects
 
     StudentInfo()
     {
-        for (int i = 0; i < 5; ++i) {
-            grades[i] = 0.0;
-        } // Initialize all grades to 0.0
+        grades.resize(5, 0.0); // Initialize all grades to 0.0
     }
 };
 
@@ -28,7 +25,7 @@ class Teacher
 public:
     Teacher() {}
 
-    static void loadStudents(const string &filename, vector<StudentInfo> &students)
+    static void loadStudents(const string &filename, StudentInfo *&students, int &studentCount)
     {
         ifstream file(filename);
         if (!file.is_open())
@@ -38,6 +35,7 @@ public:
         }
 
         string line;
+        studentCount = 0;
         while (getline(file, line))
         {
             stringstream ss(line);
@@ -53,18 +51,26 @@ public:
                 student.grades[i] = stof(gradeStr);
             }
 
-            students.push_back(student);
+            StudentInfo *newStudents = new StudentInfo[studentCount + 1];
+            for (int i = 0; i < studentCount; ++i)
+            {
+                newStudents[i] = students[i];
+            }
+            newStudents[studentCount++] = student;
+            delete[] students;
+            students = newStudents;
         }
 
         file.close();
     }
 
-    static void saveStudents(const vector<StudentInfo> &students, const string &filename)
+    static void saveStudents(const StudentInfo students[], int studentCount, const string &filename)
     {
         ofstream file(filename);
 
-        for (const auto &student : students)
+        for (int i = 0; i < studentCount; ++i)
         {
+            const StudentInfo &student = students[i];
             file << student.studentId << "|" << student.studentName << "|" << student.className;
             for (const auto &grade : student.grades)
             {
@@ -76,11 +82,11 @@ public:
         file.close();
     }
 
-    bool isDuplicateId(const vector<StudentInfo> &students, const string &id)
+    bool isDuplicateId(const StudentInfo students[], int studentCount, const string &id)
     {
-        for (const auto &student : students)
+        for (int i = 0; i < studentCount; ++i)
         {
-            if (student.studentId == id)
+            if (students[i].studentId == id)
             {
                 return true;
             }
@@ -118,8 +124,9 @@ public:
 
     void addStudentAndGrades()
     {
-        vector<StudentInfo> students;
-        loadStudents("students.txt", students);
+        StudentInfo *students = nullptr;
+        int studentCount = 0;
+        loadStudents("students.txt", students, studentCount);
 
         while (true)
         {
@@ -134,7 +141,7 @@ public:
             cout << "Student ID   : ";
             cin >> newStudent.studentId;
 
-            if (isDuplicateId(students, newStudent.studentId))
+            if (isDuplicateId(students, studentCount, newStudent.studentId))
             {
                 cout << "\033[1;31mStudent ID already exists. Please enter a different ID.\033[0m" << endl;
                 char choice;
@@ -170,8 +177,16 @@ public:
                 cin >> newStudent.grades[i];
             }
 
-            students.push_back(newStudent);
-            saveStudents(students, "students.txt");
+            StudentInfo *newStudents = new StudentInfo[studentCount + 1];
+            for (int i = 0; i < studentCount; ++i)
+            {
+                newStudents[i] = students[i];
+            }
+            newStudents[studentCount++] = newStudent;
+            delete[] students;
+            students = newStudents;
+
+            saveStudents(students, studentCount, "students.txt");
             cout << "================================================================================" << endl;
             cout << "\033[1;32mStudent and grades added successfully.\033[0m" << endl;
             system("pause");
@@ -184,8 +199,9 @@ public:
     {
         system("cls");
 
-        vector<StudentInfo> students;
-        loadStudents("students.txt", students);
+        StudentInfo *students = nullptr;
+        int studentCount = 0;
+        loadStudents("students.txt", students, studentCount);
 
         cout << "==============================================================================================" << endl;
         cout << "                                CLASS GRADES (Unsorted Data)" << endl;
@@ -195,30 +211,31 @@ public:
 
         string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
         int no = 1;
-        for (const auto &student : students)
+        for (int i = 0; i < studentCount; ++i)
         {
-            for (int i = 0; i < 5; ++i)
+            const StudentInfo &student = students[i];
+            for (int j = 0; j < 5; ++j)
             {
-                if (i == 2)
+                if (j == 2)
                 {
-                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[i] << " |  ";
+                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[j] << " |  ";
                 }
                 else
                 {
-                    cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[i] << " |  ";
+                    cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[j] << " |  ";
                 }
 
-                if (student.grades[i] < 40)
+                if (student.grades[j] < 40)
                 {
-                    cout << "\033[1;31m" << setw(6) << left << student.grades[i];
+                    cout << "\033[1;31m" << setw(6) << left << student.grades[j];
                 }
                 else
                 {
-                    cout << "\033[1;32m" << setw(6) << left << student.grades[i];
+                    cout << "\033[1;32m" << setw(6) << left << student.grades[j];
                 }
-                cout << "\033[0m" << " |  " << setw(6) << left << getGradeLetter(student.grades[i]) << "|" << endl;
+                cout << "\033[0m" << " |  " << setw(6) << left << getGradeLetter(student.grades[j]) << "|" << endl;
             }
-            if (&student != &students.back())
+            if (i != studentCount - 1)
             {
                 cout << "----------------------------------------------------------------------------------------------" << endl;
             }
@@ -228,166 +245,35 @@ public:
         system("cls");
     }
 
-    void CocktailSort(StudentInfo students[], int n, int choice) {
-        bool swapped = true;
-        int start = 0;
-        int end = n - 1;
-
-        while (swapped) {
-            swapped = false;
-
-            for (int i = start; i < end; ++i) {
-                bool shouldSwap = false;
-                switch (choice) {
-                    case 1:
-                        shouldSwap = students[i].studentId > students[i + 1].studentId;
-                        break;
-                    case 2:
-                        shouldSwap = students[i].studentName > students[i + 1].studentName;
-                        break;
-                    case 3:
-                        shouldSwap = students[i].className > students[i + 1].className;
-                        break;
-                    case 4:
-                        shouldSwap = students[i].grades[0] > students[i + 1].grades[0]; // Example sort by first grade
-                        break;
-                }
-                if (shouldSwap) {
-                    swap(students[i], students[i + 1]);
-                    swapped = true;
-                }
-            }
-
-            if (!swapped)
-                break;
-
-            swapped = false;
-            --end;
-
-            for (int i = end - 1; i >= start; --i) {
-                bool shouldSwap = false;
-                switch (choice) {
-                    case 1:
-                        shouldSwap = students[i].studentId > students[i + 1].studentId;
-                        break;
-                    case 2:
-                        shouldSwap = students[i].studentName > students[i + 1].studentName;
-                        break;
-                    case 3:
-                        shouldSwap = students[i].className > students[i + 1].className;
-                        break;
-                    case 4:
-                        shouldSwap = students[i].grades[0] > students[i + 1].grades[0]; // Example sort by first grade
-                        break;
-                }
-                if (shouldSwap) {
-                    swap(students[i], students[i + 1]);
-                    swapped = true;
-                }
-            }
-
-            ++start;
-        }
-    }
-
-    void printHeader(int choice) {
-        cout << "==============================================================================================" << endl;
-        cout << "                                       SORT RESULTS" << endl;
-        cout << "==============================================================================================" << endl;
-        cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
-        cout << "----------------------------------------------------------------------------------------------" << endl;
-    }
-
-    void printStudents(const StudentInfo students[], int n, int choice) {
-        printHeader(choice);
-        for (int i = 0; i < n; ++i) {
-            cout << "| " << (i + 1) << "   | "
-                << students[i].studentId << " | "
-                << students[i].studentName << " | "
-                << students[i].className << " | ";
-            for (int j = 0; j < 5; ++j) {
-                cout << students[i].grades[j] << (j < 4 ? ", " : " | ");
-            }
-            cout << "     |     |" << endl;
-        }
-    }
-
-    int readStudentsFromFile(const string &filename, StudentInfo students[], int maxSize) {
-        ifstream infile(filename);
-        string line;
-        int count = 0;
-
-        while (getline(infile, line) && count < maxSize) {
-            stringstream ss(line);
-            string token;
-
-            getline(ss, students[count].studentId, '|');
-            getline(ss, students[count].studentName, '|');
-            getline(ss, students[count].className, '|');
-
-            for (int i = 0; i < 5; ++i) {
-                getline(ss, token, '|');
-                students[count].grades[i] = stof(token);
-            }
-
-            ++count;
-        }
-
-        return count;
-    }
-
     void cocktailSort()
     {
-        const int maxSize = 100;
-        StudentInfo students[maxSize];
-        int n = readStudentsFromFile("student.txt", students, maxSize);
-
         int choice;
-        do {
-            cout << "================================================================================" << endl;
-            cout << "                                 SEARCH CATEGORY                                " << endl;
-            cout << "================================================================================" << endl;
-            cout << "Choose the category to sort by:" << endl;
-            cout << "[1] Student ID" << endl;
-            cout << "[2] Student Name" << endl;
-            cout << "[3] Student Class" << endl;
-            cout << "[4] Subject (by first grade as example)" << endl;
-            cout << "[5] Back to Assignment Menu" << endl;
-            cout << "================================================================================" << endl;
-            cout << "Enter your choice: ";
-            cin >> choice;
+        system("cls");
+        cout << "================================================================================"<<endl;
+        cout << "                                 SEARCH CATEGORY                                "<<endl;
+        cout << "================================================================================"<<endl;
+        cout << "Choose the category to sort by:"<<endl;
+        cout << "[1] Student ID"<<endl;
+        cout << "[2] Student Name"<<endl;
+        cout << "[3] Student Class"<<endl;
+        cout << "[4] Subject"<<endl;
+        cout << "[5] Back to Assignment Menu"<<endl;
+        cout << "================================================================================"<<endl;
+        cout << "Enter your choice: ";
+        cin>>choice;
 
-            if (choice >= 1 && choice <= 4) {
-                CocktailSort(students, n, choice);
-                cout << "Sorted data by ";
-                switch (choice) {
-                    case 1:
-                        cout << "Student ID:" << endl;
-                        break;
-                    case 2:
-                        cout << "Student Name:" << endl;
-                        break;
-                    case 3:
-                        cout << "Student Class:" << endl;
-                        break;
-                    case 4:
-                        cout << "First Grade:" << endl;
-                        break;
-                }
-                printStudents(students, n, choice);
-            }
-
-        } while (choice != 5);
-
-        if(choice==5)
+        if(choice == 5)
             return;
+        else if(choice == 1)
+
 
     }
     
     void stringSearch()
     {
-        vector<StudentInfo> students;
-        loadStudents("students.txt", students);
+        StudentInfo *students = nullptr;
+        int studentCount = 0;
+        loadStudents("students.txt", students, studentCount);
 
         int searchChoice;
         system("cls");
@@ -433,7 +319,7 @@ public:
         cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
         cout << "----------------------------------------------------------------------------------------------" << endl;
 
-        for (size_t studentIndex = 0; studentIndex < students.size(); ++studentIndex)
+        for (int studentIndex = 0; studentIndex < studentCount; ++studentIndex)
         {
             const auto &student = students[studentIndex];
             bool match = false;
@@ -459,7 +345,7 @@ public:
                             cout << "\033[1;32m" << setw(6) << left << student.grades[i];
                         }
                         cout << "\033[0m" << " |  " << setw(6) << left << getGradeLetter(student.grades[i]) << "|" << endl;
-                        if (studentIndex != students.size() - 1 || i != 4)
+                        if (studentIndex != studentCount - 1 || i != 4)
                         {
                             cout << "----------------------------------------------------------------------------------------------" << endl;
                         }
@@ -494,7 +380,7 @@ public:
                     }
                     cout << "\033[0m" << "  |  " << setw(6) << left << getGradeLetter(student.grades[i]) << "|" << endl;
                 }
-                if (studentIndex != students.size() - 1)
+                if (studentIndex != studentCount - 1)
                 {
                     cout << "----------------------------------------------------------------------------------------------" << endl;
                 }
@@ -508,7 +394,6 @@ public:
         cout << "==============================================================================================" << endl;
         system("pause");
     }
-
 
     void ternarySearch(const vector<StudentInfo> &students, const string &key, int left, int right, vector<int> &results, bool byName = false)
     {
