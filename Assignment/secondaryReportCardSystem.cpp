@@ -13,11 +13,13 @@ struct StudentInfo
     string studentId;
     string studentName;
     string className;
-    vector<float> grades; // 5 grades for 5 subjects
+    float grades[5]; // 5 grades for 5 subjects
 
     StudentInfo()
     {
-        grades.resize(5, 0.0); // Initialize all grades to 0.0
+        for (int i = 0; i < 5; ++i) {
+            grades[i] = 0.0;
+        } // Initialize all grades to 0.0
     }
 };
 
@@ -226,27 +228,159 @@ public:
         system("cls");
     }
 
+    void CocktailSort(StudentInfo students[], int n, int choice) {
+        bool swapped = true;
+        int start = 0;
+        int end = n - 1;
+
+        while (swapped) {
+            swapped = false;
+
+            for (int i = start; i < end; ++i) {
+                bool shouldSwap = false;
+                switch (choice) {
+                    case 1:
+                        shouldSwap = students[i].studentId > students[i + 1].studentId;
+                        break;
+                    case 2:
+                        shouldSwap = students[i].studentName > students[i + 1].studentName;
+                        break;
+                    case 3:
+                        shouldSwap = students[i].className > students[i + 1].className;
+                        break;
+                    case 4:
+                        shouldSwap = students[i].grades[0] > students[i + 1].grades[0]; // Example sort by first grade
+                        break;
+                }
+                if (shouldSwap) {
+                    swap(students[i], students[i + 1]);
+                    swapped = true;
+                }
+            }
+
+            if (!swapped)
+                break;
+
+            swapped = false;
+            --end;
+
+            for (int i = end - 1; i >= start; --i) {
+                bool shouldSwap = false;
+                switch (choice) {
+                    case 1:
+                        shouldSwap = students[i].studentId > students[i + 1].studentId;
+                        break;
+                    case 2:
+                        shouldSwap = students[i].studentName > students[i + 1].studentName;
+                        break;
+                    case 3:
+                        shouldSwap = students[i].className > students[i + 1].className;
+                        break;
+                    case 4:
+                        shouldSwap = students[i].grades[0] > students[i + 1].grades[0]; // Example sort by first grade
+                        break;
+                }
+                if (shouldSwap) {
+                    swap(students[i], students[i + 1]);
+                    swapped = true;
+                }
+            }
+
+            ++start;
+        }
+    }
+
+    void printHeader(int choice) {
+        cout << "==============================================================================================" << endl;
+        cout << "                                       SORT RESULTS" << endl;
+        cout << "==============================================================================================" << endl;
+        cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
+        cout << "----------------------------------------------------------------------------------------------" << endl;
+    }
+
+    void printStudents(const StudentInfo students[], int n, int choice) {
+        printHeader(choice);
+        for (int i = 0; i < n; ++i) {
+            cout << "| " << (i + 1) << "   | "
+                << students[i].studentId << " | "
+                << students[i].studentName << " | "
+                << students[i].className << " | ";
+            for (int j = 0; j < 5; ++j) {
+                cout << students[i].grades[j] << (j < 4 ? ", " : " | ");
+            }
+            cout << "     |     |" << endl;
+        }
+    }
+
+    int readStudentsFromFile(const string &filename, StudentInfo students[], int maxSize) {
+        ifstream infile(filename);
+        string line;
+        int count = 0;
+
+        while (getline(infile, line) && count < maxSize) {
+            stringstream ss(line);
+            string token;
+
+            getline(ss, students[count].studentId, '|');
+            getline(ss, students[count].studentName, '|');
+            getline(ss, students[count].className, '|');
+
+            for (int i = 0; i < 5; ++i) {
+                getline(ss, token, '|');
+                students[count].grades[i] = stof(token);
+            }
+
+            ++count;
+        }
+
+        return count;
+    }
+
     void cocktailSort()
     {
+        const int maxSize = 100;
+        StudentInfo students[maxSize];
+        int n = readStudentsFromFile("student.txt", students, maxSize);
+
         int choice;
-        system("cls");
-        cout << "================================================================================"<<endl;
-        cout << "                                 SEARCH CATEGORY                                "<<endl;
-        cout << "================================================================================"<<endl;
-        cout << "Choose the category to sort by:"<<endl;
-        cout << "[1] Student ID"<<endl;
-        cout << "[2] Student Name"<<endl;
-        cout << "[3] Student Class"<<endl;
-        cout << "[4] Subject"<<endl;
-        cout << "[5] Back to Assignment Menu"<<endl;
-        cout << "================================================================================"<<endl;
-        cout << "Enter your choice: ";
-        cin>>choice;
+        do {
+            cout << "================================================================================" << endl;
+            cout << "                                 SEARCH CATEGORY                                " << endl;
+            cout << "================================================================================" << endl;
+            cout << "Choose the category to sort by:" << endl;
+            cout << "[1] Student ID" << endl;
+            cout << "[2] Student Name" << endl;
+            cout << "[3] Student Class" << endl;
+            cout << "[4] Subject (by first grade as example)" << endl;
+            cout << "[5] Back to Assignment Menu" << endl;
+            cout << "================================================================================" << endl;
+            cout << "Enter your choice: ";
+            cin >> choice;
 
-        if(choice == 5)
+            if (choice >= 1 && choice <= 4) {
+                CocktailSort(students, n, choice);
+                cout << "Sorted data by ";
+                switch (choice) {
+                    case 1:
+                        cout << "Student ID:" << endl;
+                        break;
+                    case 2:
+                        cout << "Student Name:" << endl;
+                        break;
+                    case 3:
+                        cout << "Student Class:" << endl;
+                        break;
+                    case 4:
+                        cout << "First Grade:" << endl;
+                        break;
+                }
+                printStudents(students, n, choice);
+            }
+
+        } while (choice != 5);
+
+        if(choice==5)
             return;
-        else if(choice == 1)
-
 
     }
     
