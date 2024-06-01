@@ -12,11 +12,13 @@ struct StudentInfo
     string studentId;
     string studentName;
     string className;
-    vector<float> grades; // 5 grades for 5 subjects
+    float grades[5]; // 5 grades for 5 subjects
 
     StudentInfo()
     {
-        grades.resize(5, 0.0); // Initialize all grades to 0.0
+       for(int i = 0; i < 5; ++i){
+            grades[i]=0.0;
+       }
     }
 };
 
@@ -264,7 +266,7 @@ public:
 
         if(choice == 5)
             return;
-        else if(choice == 1)
+        else if(choice == 1){}
 
 
     }
