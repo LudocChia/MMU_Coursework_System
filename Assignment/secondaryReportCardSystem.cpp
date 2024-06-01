@@ -13,11 +13,11 @@ struct StudentInfo
     string studentId;
     string studentName;
     string className;
-    vector<float> grades; // 5 grades for 5 subjects
+    vector<float> grades;
 
     StudentInfo()
     {
-        grades.resize(5, 0.0); // Initialize all grades to 0.0
+        grades.resize(5, 0.0);
     }
 };
 
