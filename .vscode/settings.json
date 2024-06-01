@@ -3,8 +3,12 @@
         "iostream": "cpp",
         "ostream": "cpp",
         "functional": "cpp",
+<<<<<<< HEAD
         "vector": "cpp",
         "xstring": "cpp",
         "iomanip": "cpp"
+=======
+        "vector": "cpp"
+>>>>>>> 8d7b36adefa6c050807efdd4b65d3e056a7726f0
     }
 }

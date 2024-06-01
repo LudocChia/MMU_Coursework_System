@@ -1,5 +1,4 @@
 #include <iostream>
-#include <vector>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -13,11 +12,14 @@ struct StudentInfo
     string studentId;
     string studentName;
     string className;
-    vector<float> grades; // 5 grades for 5 subjects
+    float grades[5];
 
     StudentInfo()
     {
-        grades.resize(5, 0.0); // Initialize all grades to 0.0
+        for (int i = 0; i < 5; ++i)
+        {
+            grades[i] = 0.0;
+        }
     }
 };
 
@@ -26,7 +28,7 @@ class Teacher
 public:
     Teacher() {}
 
-    static void loadStudents(const string &filename, vector<StudentInfo> &students)
+    static void loadStudents(const string &filename, StudentInfo *&students, int &studentCount)
     {
         ifstream file(filename);
         if (!file.is_open())
@@ -36,6 +38,7 @@ public:
         }
 
         string line;
+        studentCount = 0;
         while (getline(file, line))
         {
             stringstream ss(line);
@@ -51,18 +54,26 @@ public:
                 student.grades[i] = stof(gradeStr);
             }
 
-            students.push_back(student);
+            StudentInfo *newStudents = new StudentInfo[studentCount + 1];
+            for (int i = 0; i < studentCount; ++i)
+            {
+                newStudents[i] = students[i];
+            }
+            newStudents[studentCount++] = student;
+            delete[] students;
+            students = newStudents;
         }
 
         file.close();
     }
 
-    static void saveStudents(const vector<StudentInfo> &students, const string &filename)
+    static void saveStudents(const StudentInfo students[], int studentCount, const string &filename)
     {
         ofstream file(filename);
 
-        for (const auto &student : students)
+        for (int i = 0; i < studentCount; ++i)
         {
+            const StudentInfo &student = students[i];
             file << student.studentId << "|" << student.studentName << "|" << student.className;
             for (const auto &grade : student.grades)
             {
@@ -74,11 +85,11 @@ public:
         file.close();
     }
 
-    bool isDuplicateId(const vector<StudentInfo> &students, const string &id)
+    bool isDuplicateId(const StudentInfo students[], int studentCount, const string &id)
     {
-        for (const auto &student : students)
+        for (int i = 0; i < studentCount; ++i)
         {
-            if (student.studentId == id)
+            if (students[i].studentId == id)
             {
                 return true;
             }
@@ -116,8 +127,9 @@ public:
 
     void addStudentAndGrades()
     {
-        vector<StudentInfo> students;
-        loadStudents("students.txt", students);
+        StudentInfo *students = nullptr;
+        int studentCount = 0;
+        loadStudents("students.txt", students, studentCount);
 
         while (true)
         {
@@ -132,7 +144,7 @@ public:
             cout << "Student ID   : ";
             cin >> newStudent.studentId;
 
-            if (isDuplicateId(students, newStudent.studentId))
+            if (isDuplicateId(students, studentCount, newStudent.studentId))
             {
                 cout << "\033[1;31mStudent ID already exists. Please enter a different ID.\033[0m" << endl;
                 char choice;
@@ -168,8 +180,16 @@ public:
                 cin >> newStudent.grades[i];
             }
 
-            students.push_back(newStudent);
-            saveStudents(students, "students.txt");
+            StudentInfo *newStudents = new StudentInfo[studentCount + 1];
+            for (int i = 0; i < studentCount; ++i)
+            {
+                newStudents[i] = students[i];
+            }
+            newStudents[studentCount++] = newStudent;
+            delete[] students;
+            students = newStudents;
+
+            saveStudents(students, studentCount, "students.txt");
             cout << "================================================================================" << endl;
             cout << "\033[1;32mStudent and grades added successfully.\033[0m" << endl;
             system("pause");
@@ -182,8 +202,9 @@ public:
     {
         system("cls");
 
-        vector<StudentInfo> students;
-        loadStudents("students.txt", students);
+        StudentInfo *students = nullptr;
+        int studentCount = 0;
+        loadStudents("students.txt", students, studentCount);
 
         cout << "==============================================================================================" << endl;
         cout << "                                CLASS GRADES (Unsorted Data)" << endl;
@@ -193,30 +214,31 @@ public:
 
         string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
         int no = 1;
-        for (const auto &student : students)
+        for (int i = 0; i < studentCount; ++i)
         {
-            for (int i = 0; i < 5; ++i)
+            const StudentInfo &student = students[i];
+            for (int j = 0; j < 5; ++j)
             {
-                if (i == 2)
+                if (j == 2)
                 {
-                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[i] << " |  ";
+                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[j] << " |  ";
                 }
                 else
                 {
-                    cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[i] << " |  ";
+                    cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[j] << " |  ";
                 }
 
-                if (student.grades[i] < 40)
+                if (student.grades[j] < 40)
                 {
-                    cout << "\033[1;31m" << setw(6) << left << student.grades[i];
+                    cout << "\033[1;31m" << setw(6) << left << student.grades[j];
                 }
                 else
                 {
-                    cout << "\033[1;32m" << setw(6) << left << student.grades[i];
+                    cout << "\033[1;32m" << setw(6) << left << student.grades[j];
                 }
-                cout << "\033[0m" << " |  " << setw(6) << left << getGradeLetter(student.grades[i]) << "|" << endl;
+                cout << "\033[0m" << " |  " << setw(6) << left << getGradeLetter(student.grades[j]) << "|" << endl;
             }
-            if (&student != &students.back())
+            if (i != studentCount - 1)
             {
                 cout << "----------------------------------------------------------------------------------------------" << endl;
             }
@@ -225,11 +247,12 @@ public:
         system("pause");
         system("cls");
     }
-    
-void stringSearch()
+
+    void stringSearch()
     {
-        vector<StudentInfo> students;
-        loadStudents("students.txt", students);
+        StudentInfo *students = nullptr;
+        int studentCount = 0;
+        loadStudents("students.txt", students, studentCount);
 
         int searchChoice;
         system("cls");
@@ -275,7 +298,7 @@ void stringSearch()
         cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
         cout << "----------------------------------------------------------------------------------------------" << endl;
 
-        for (size_t studentIndex = 0; studentIndex < students.size(); ++studentIndex)
+        for (int studentIndex = 0; studentIndex < studentCount; ++studentIndex)
         {
             const auto &student = students[studentIndex];
             bool match = false;
@@ -301,7 +324,7 @@ void stringSearch()
                             cout << "\033[1;32m" << setw(6) << left << student.grades[i];
                         }
                         cout << "\033[0m" << " |  " << setw(6) << left << getGradeLetter(student.grades[i]) << "|" << endl;
-                        if (studentIndex != students.size() - 1 || i != 4)
+                        if (studentIndex != studentCount - 1 || i != 4)
                         {
                             cout << "----------------------------------------------------------------------------------------------" << endl;
                         }
@@ -336,7 +359,7 @@ void stringSearch()
                     }
                     cout << "\033[0m" << "  |  " << setw(6) << left << getGradeLetter(student.grades[i]) << "|" << endl;
                 }
-                if (studentIndex != students.size() - 1)
+                if (studentIndex != studentCount - 1)
                 {
                     cout << "----------------------------------------------------------------------------------------------" << endl;
                 }
@@ -351,8 +374,7 @@ void stringSearch()
         system("pause");
     }
 
-
-    void ternarySearch(const vector<StudentInfo> &students, const string &key, int left, int right, vector<int> &results, bool byName = false)
+    void ternarySearch(StudentInfo *students, const string &key, int left, int right, int *results, int &resultsCount, bool byName = false)
     {
         if (right >= left)
         {
@@ -360,9 +382,9 @@ void stringSearch()
             int mid2 = right - (right - left) / 3;
 
             bool found_mid1 = false;
-            for (int i : results)
+            for (int i = 0; i < resultsCount; ++i)
             {
-                if (i == mid1)
+                if (results[i] == mid1)
                 {
                     found_mid1 = true;
                     break;
@@ -372,13 +394,13 @@ void stringSearch()
             if ((!byName && students[mid1].studentId.find(key) != string::npos && !found_mid1) ||
                 (byName && students[mid1].studentName.find(key) != string::npos && !found_mid1))
             {
-                results.push_back(mid1);
+                results[resultsCount++] = mid1;
             }
 
             bool found_mid2 = false;
-            for (int i : results)
+            for (int i = 0; i < resultsCount; ++i)
             {
-                if (i == mid2)
+                if (results[i] == mid2)
                 {
                     found_mid2 = true;
                     break;
@@ -388,20 +410,22 @@ void stringSearch()
             if ((!byName && students[mid2].studentId.find(key) != string::npos && !found_mid2) ||
                 (byName && students[mid2].studentName.find(key) != string::npos && !found_mid2))
             {
-                results.push_back(mid2);
+                results[resultsCount++] = mid2;
             }
 
-            ternarySearch(students, key, left, mid1 - 1, results, byName);
-            ternarySearch(students, key, mid1 + 1, mid2 - 1, results, byName);
-            ternarySearch(students, key, mid2 + 1, right, results, byName);
+            ternarySearch(students, key, left, mid1 - 1, results, resultsCount, byName);
+            ternarySearch(students, key, mid1 + 1, mid2 - 1, results, resultsCount, byName);
+            ternarySearch(students, key, mid2 + 1, right, results, resultsCount, byName);
         }
     }
 
-    void searchByStudentID(const vector<StudentInfo> &students, const string &id)
+    void searchByStudentID(StudentInfo *students, int studentCount, const string &id)
     {
-        vector<int> results;
-        ternarySearch(students, id, 0, students.size() - 1, results);
-        if (!results.empty())
+        int *results = new int[studentCount];
+        int resultsCount = 0;
+        ternarySearch(students, id, 0, studentCount - 1, results, resultsCount);
+
+        if (resultsCount > 0)
         {
             string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
 
@@ -411,31 +435,31 @@ void stringSearch()
             cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
             cout << "----------------------------------------------------------------------------------------------" << endl;
             int no = 1;
-            for (const auto &index : results)
+            for (int i = 0; i < resultsCount; ++i)
             {
-                StudentInfo student = students[index];
-                for (int i = 0; i < 5; ++i)
+                const StudentInfo &student = students[results[i]];
+                for (int j = 0; j < 5; ++j)
                 {
-                    if (i == 2)
+                    if (j == 2)
                     {
-                        cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[i] << " | ";
+                        cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[j] << " | ";
                     }
                     else
                     {
-                        cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[i] << " | ";
+                        cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[j] << " | ";
                     }
 
-                    if (student.grades[i] < 40.0f)
+                    if (student.grades[j] < 40.0f)
                     {
-                        cout << "\033[1;31m" << setw(4) << right << fixed << setprecision(1) << student.grades[i] << "   ";
+                        cout << "\033[1;31m" << setw(4) << right << fixed << setprecision(1) << student.grades[j] << "   ";
                     }
                     else
                     {
-                        cout << "\033[1;32m" << setw(4) << right << fixed << setprecision(1) << student.grades[i] << "   ";
+                        cout << "\033[1;32m" << setw(4) << right << fixed << setprecision(1) << student.grades[j] << "   ";
                     }
-                    cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[i]) << " |" << endl;
+                    cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[j]) << " |" << endl;
                 }
-                if (&index != &results.back())
+                if (i != resultsCount - 1)
                 {
                     cout << "----------------------------------------------------------------------------------------------" << endl;
                 }
@@ -446,15 +470,18 @@ void stringSearch()
         {
             cout << "\033[1;31mStudent ID not found.\033[0m" << endl;
         }
+        delete[] results;
         system("pause");
         system("cls");
     }
 
-    void searchByStudentName(const vector<StudentInfo> &students, const string &name)
+    void searchByStudentName(StudentInfo *students, int studentCount, const string &name)
     {
-        vector<int> results;
-        ternarySearch(students, name, 0, students.size() - 1, results, true);
-        if (!results.empty())
+        int *results = new int[studentCount];
+        int resultsCount = 0;
+        ternarySearch(students, name, 0, studentCount - 1, results, resultsCount, true);
+
+        if (resultsCount > 0)
         {
             string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
 
@@ -464,31 +491,31 @@ void stringSearch()
             cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
             cout << "----------------------------------------------------------------------------------------------" << endl;
             int no = 1;
-            for (const auto &index : results)
+            for (int i = 0; i < resultsCount; ++i)
             {
-                StudentInfo student = students[index];
-                for (int i = 0; i < 5; ++i)
+                const StudentInfo &student = students[results[i]];
+                for (int j = 0; j < 5; ++j)
                 {
-                    if (i == 2)
+                    if (j == 2)
                     {
-                        cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[i] << " | ";
+                        cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[j] << " | ";
                     }
                     else
                     {
-                        cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[i] << " | ";
+                        cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[j] << " | ";
                     }
 
-                    if (student.grades[i] < 40.0f)
+                    if (student.grades[j] < 40.0f)
                     {
-                        cout << "\033[1;31m" << setw(4) << right << fixed << setprecision(1) << student.grades[i] << "   ";
+                        cout << "\033[1;31m" << setw(4) << right << fixed << setprecision(1) << student.grades[j] << "   ";
                     }
                     else
                     {
-                        cout << "\033[1;32m" << setw(4) << right << fixed << setprecision(1) << student.grades[i] << "   ";
+                        cout << "\033[1;32m" << setw(4) << right << fixed << setprecision(1) << student.grades[j] << "   ";
                     }
-                    cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[i]) << " |" << endl;
+                    cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[j]) << " |" << endl;
                 }
-                if (&index != &results.back())
+                if (i != resultsCount - 1)
                 {
                     cout << "----------------------------------------------------------------------------------------------" << endl;
                 }
@@ -499,11 +526,12 @@ void stringSearch()
         {
             cout << "\033[1;31mStudent Name not found.\033[0m" << endl;
         }
+        delete[] results;
         system("pause");
         system("cls");
     }
 
-    void ternarySearchByClass(const vector<StudentInfo> &students, const string &className, int left, int right, vector<int> &results)
+    void ternarySearchByClass(StudentInfo *students, const string &className, int left, int right, int *results, int &resultsCount)
     {
         if (right >= left)
         {
@@ -511,9 +539,9 @@ void stringSearch()
             int mid2 = right - (right - left) / 3;
 
             bool found_mid1 = false;
-            for (int i : results)
+            for (int i = 0; i < resultsCount; ++i)
             {
-                if (i == mid1)
+                if (results[i] == mid1)
                 {
                     found_mid1 = true;
                     break;
@@ -522,13 +550,13 @@ void stringSearch()
 
             if (students[mid1].className.find(className) != string::npos && !found_mid1)
             {
-                results.push_back(mid1);
+                results[resultsCount++] = mid1;
             }
 
             bool found_mid2 = false;
-            for (int i : results)
+            for (int i = 0; i < resultsCount; ++i)
             {
-                if (i == mid2)
+                if (results[i] == mid2)
                 {
                     found_mid2 = true;
                     break;
@@ -537,20 +565,22 @@ void stringSearch()
 
             if (students[mid2].className.find(className) != string::npos && !found_mid2)
             {
-                results.push_back(mid2);
+                results[resultsCount++] = mid2;
             }
 
-            ternarySearchByClass(students, className, left, mid1 - 1, results);
-            ternarySearchByClass(students, className, mid1 + 1, mid2 - 1, results);
-            ternarySearchByClass(students, className, mid2 + 1, right, results);
+            ternarySearchByClass(students, className, left, mid1 - 1, results, resultsCount);
+            ternarySearchByClass(students, className, mid1 + 1, mid2 - 1, results, resultsCount);
+            ternarySearchByClass(students, className, mid2 + 1, right, results, resultsCount);
         }
     }
 
-    void searchByClass(const vector<StudentInfo> &students, const string &className)
+    void searchByClass(StudentInfo *students, int studentCount, const string &className)
     {
-        vector<int> results;
-        ternarySearchByClass(students, className, 0, students.size() - 1, results);
-        if (!results.empty())
+        int *results = new int[studentCount];
+        int resultsCount = 0;
+        ternarySearchByClass(students, className, 0, studentCount - 1, results, resultsCount);
+
+        if (resultsCount > 0)
         {
             string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
 
@@ -560,31 +590,31 @@ void stringSearch()
             cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
             cout << "----------------------------------------------------------------------------------------------" << endl;
             int no = 1;
-            for (const auto &index : results)
+            for (int i = 0; i < resultsCount; ++i)
             {
-                StudentInfo student = students[index];
-                for (int i = 0; i < 5; ++i)
+                const StudentInfo &student = students[results[i]];
+                for (int j = 0; j < 5; ++j)
                 {
-                    if (i == 2)
+                    if (j == 2)
                     {
-                        cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[i] << " | ";
+                        cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[j] << " | ";
                     }
                     else
                     {
-                        cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[i] << " | ";
+                        cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[j] << " | ";
                     }
 
-                    if (student.grades[i] < 40.0f)
+                    if (student.grades[j] < 40.0f)
                     {
-                        cout << "\033[1;31m" << setw(4) << right << fixed << setprecision(1) << student.grades[i] << "   ";
+                        cout << "\033[1;31m" << setw(4) << right << fixed << setprecision(1) << student.grades[j] << "   ";
                     }
                     else
                     {
-                        cout << "\033[1;32m" << setw(4) << right << fixed << setprecision(1) << student.grades[i] << "   ";
+                        cout << "\033[1;32m" << setw(4) << right << fixed << setprecision(1) << student.grades[j] << "   ";
                     }
-                    cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[i]) << " |" << endl;
+                    cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[j]) << " |" << endl;
                 }
-                if (&index != &results.back())
+                if (i != resultsCount - 1)
                 {
                     cout << "----------------------------------------------------------------------------------------------" << endl;
                 }
@@ -595,11 +625,12 @@ void stringSearch()
         {
             cout << "\033[1;31mClass not found.\033[0m" << endl;
         }
+        delete[] results;
         system("pause");
         system("cls");
     }
 
-    void ternarySearchBySubject(const vector<StudentInfo> &students, const string &subject, int subjectIndex, int left, int right, vector<int> &results)
+    void ternarySearchBySubject(StudentInfo *students, const string &subject, int subjectIndex, int left, int right, int *results, int &resultsCount)
     {
         if (right >= left)
         {
@@ -607,9 +638,9 @@ void stringSearch()
             int mid2 = right - (right - left) / 3;
 
             bool found_mid1 = false;
-            for (int i : results)
+            for (int i = 0; i < resultsCount; ++i)
             {
-                if (i == mid1)
+                if (results[i] == mid1)
                 {
                     found_mid1 = true;
                     break;
@@ -618,13 +649,13 @@ void stringSearch()
 
             if (students[mid1].grades[subjectIndex] != -1 && !found_mid1)
             {
-                results.push_back(mid1);
+                results[resultsCount++] = mid1;
             }
 
             bool found_mid2 = false;
-            for (int i : results)
+            for (int i = 0; i < resultsCount; ++i)
             {
-                if (i == mid2)
+                if (results[i] == mid2)
                 {
                     found_mid2 = true;
                     break;
@@ -633,16 +664,16 @@ void stringSearch()
 
             if (students[mid2].grades[subjectIndex] != -1 && !found_mid2)
             {
-                results.push_back(mid2);
+                results[resultsCount++] = mid2;
             }
 
-            ternarySearchBySubject(students, subject, subjectIndex, left, mid1 - 1, results);
-            ternarySearchBySubject(students, subject, subjectIndex, mid1 + 1, mid2 - 1, results);
-            ternarySearchBySubject(students, subject, subjectIndex, mid2 + 1, right, results);
+            ternarySearchBySubject(students, subject, subjectIndex, left, mid1 - 1, results, resultsCount);
+            ternarySearchBySubject(students, subject, subjectIndex, mid1 + 1, mid2 - 1, results, resultsCount);
+            ternarySearchBySubject(students, subject, subjectIndex, mid2 + 1, right, results, resultsCount);
         }
     }
 
-    void searchBySubject(const vector<StudentInfo> &students, const string &subject)
+    void searchBySubject(StudentInfo *students, int studentCount, const string &subject)
     {
         int subjectIndex = -1;
         string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
@@ -662,19 +693,20 @@ void stringSearch()
             return;
         }
 
-        vector<int> results;
-        ternarySearchBySubject(students, subject, subjectIndex, 0, students.size() - 1, results);
+        int *results = new int[studentCount];
+        int resultsCount = 0;
+        ternarySearchBySubject(students, subject, subjectIndex, 0, studentCount - 1, results, resultsCount);
 
-        if (!results.empty())
+        if (resultsCount > 0)
         {
             cout << "Results for subject \"" << subject << "\":" << endl;
             cout << "==============================================================================================" << endl;
             cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
             cout << "----------------------------------------------------------------------------------------------" << endl;
             int no = 1;
-            for (const auto &index : results)
+            for (int i = 0; i < resultsCount; ++i)
             {
-                StudentInfo student = students[index];
+                const StudentInfo &student = students[results[i]];
                 cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[subjectIndex] << " | ";
                 if (student.grades[subjectIndex] < 40.0f)
                 {
@@ -692,16 +724,18 @@ void stringSearch()
         {
             cout << "\033[1;31mNo results found for subject \"" << subject << "\".\033[0m" << endl;
         }
+        delete[] results;
         system("pause");
         system("cls");
     }
 
-    void ternarySearch()
+    void ternarySearchMenu()
     {
         system("cls");
 
-        vector<StudentInfo> students;
-        loadStudents("students.txt", students);
+        StudentInfo *students = nullptr;
+        int studentCount = 0;
+        loadStudents("students.txt", students, studentCount);
 
         cout << "==============================================================================================" << endl;
         cout << "                                  SEARCH STUDENT" << endl;
@@ -722,25 +756,25 @@ void stringSearch()
         case 1:
             cout << "Enter Student ID to search: ";
             cin >> searchStr;
-            searchByStudentID(students, searchStr);
+            searchByStudentID(students, studentCount, searchStr);
             break;
         case 2:
             cout << "Enter Student Name to search: ";
             cin.ignore();
             getline(cin, searchStr);
-            searchByStudentName(students, searchStr);
+            searchByStudentName(students, studentCount, searchStr);
             break;
         case 3:
             cout << "Enter Class to search: ";
             cin.ignore();
             getline(cin, searchStr);
-            searchByClass(students, searchStr);
+            searchByClass(students, studentCount, searchStr);
             break;
         case 4:
             cout << "Enter Subject to search: ";
             cin.ignore();
             getline(cin, searchStr);
-            searchBySubject(students, searchStr);
+            searchBySubject(students, studentCount, searchStr);
             break;
         default:
             cout << "\033[1;31mInvalid choice.\033[0m" << endl;
@@ -751,7 +785,7 @@ void stringSearch()
         system("cls");
     }
 
-    void heapify(vector<StudentInfo> &students, int n, int i, int sortChoice, int subjectIndex = 0)
+    void heapify(StudentInfo *students, int n, int i, int sortChoice, int subjectIndex = 0)
     {
         int largest = i;
         int left = 2 * i + 1;
@@ -796,8 +830,9 @@ void stringSearch()
 
     void heapSort()
     {
-        vector<StudentInfo> students;
-        loadStudents("students.txt", students);
+        StudentInfo *students = nullptr;
+        int studentCount = 0;
+        loadStudents("students.txt", students, studentCount);
 
         int sortChoice;
         cout << "Choose the field to sort by:" << endl;
@@ -827,7 +862,7 @@ void stringSearch()
             cin >> subjectIndex;
         }
 
-        int n = students.size();
+        int n = studentCount;
 
         for (int i = n / 2 - 1; i >= 0; i--)
         {
@@ -849,7 +884,7 @@ void stringSearch()
         string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
         int no = 1;
 
-        for (int i = 0; i < students.size(); ++i)
+        for (int i = 0; i < n; ++i)
         {
             const StudentInfo &student = students[i];
             for (int j = 0; j < 5; ++j)
@@ -873,7 +908,7 @@ void stringSearch()
                 }
                 cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[j]) << " |" << endl;
             }
-            if (i != students.size() - 1)
+            if (i != n - 1)
             {
                 cout << "----------------------------------------------------------------------------------------------" << endl;
             }
@@ -907,10 +942,10 @@ void stringSearch()
                 stringSearch();
                 break;
             case 2:
-                ternarySearch();
+                ternarySearchMenu();
                 break;
             case 3:
-                // cocktail sorting
+                // cocktailSort(); // 未实现的功能
                 break;
             case 4:
                 heapSort();
