@@ -16,9 +16,10 @@ struct StudentInfo
 
     StudentInfo()
     {
-       for(int i = 0; i < 5; ++i){
-            grades[i]=0.0;
-       }
+        for (int i = 0; i < 5; ++i)
+        {
+            grades[i] = 0.0;
+        }
     }
 };
 
@@ -251,26 +252,26 @@ public:
     {
         int choice;
         system("cls");
-        cout << "================================================================================"<<endl;
-        cout << "                                 SEARCH CATEGORY                                "<<endl;
-        cout << "================================================================================"<<endl;
-        cout << "Choose the category to sort by:"<<endl;
-        cout << "[1] Student ID"<<endl;
-        cout << "[2] Student Name"<<endl;
-        cout << "[3] Student Class"<<endl;
-        cout << "[4] Subject"<<endl;
-        cout << "[5] Back to Assignment Menu"<<endl;
-        cout << "================================================================================"<<endl;
+        cout << "================================================================================" << endl;
+        cout << "                                 SEARCH CATEGORY                                " << endl;
+        cout << "================================================================================" << endl;
+        cout << "Choose the category to sort by:" << endl;
+        cout << "[1] Student ID" << endl;
+        cout << "[2] Student Name" << endl;
+        cout << "[3] Student Class" << endl;
+        cout << "[4] Subject" << endl;
+        cout << "[5] Back to Assignment Menu" << endl;
+        cout << "================================================================================" << endl;
         cout << "Enter your choice: ";
-        cin>>choice;
+        cin >> choice;
 
-        if(choice == 5)
+        if (choice == 5)
             return;
-        else if(choice == 1){}
-
-
+        else if (choice == 1)
+        {
+        }
     }
-    
+
     void stringSearch()
     {
         StudentInfo *students = nullptr;
@@ -321,21 +322,39 @@ public:
         cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
         cout << "----------------------------------------------------------------------------------------------" << endl;
 
+        bool (*stringSearch)(const string &, const string &) = [](const string &text, const string &pattern)
+        {
+            int textLength = text.length();
+            int patternLength = pattern.length();
+            for (int i = 0; i <= textLength - patternLength; ++i)
+            {
+                int j;
+                for (j = 0; j < patternLength; ++j)
+                {
+                    if (text[i + j] != pattern[j])
+                        break;
+                }
+                if (j == patternLength)
+                    return true;
+            }
+            return false;
+        };
+
         for (int studentIndex = 0; studentIndex < studentCount; ++studentIndex)
         {
-            const auto &student = students[studentIndex];
+            const StudentInfo &student = students[studentIndex];
             bool match = false;
-            if (searchChoice == 1 && student.studentId.find(searchString) != string::npos)
+            if (searchChoice == 1 && stringSearch(student.studentId, searchString))
                 match = true;
-            else if (searchChoice == 2 && student.studentName.find(searchString) != string::npos)
+            else if (searchChoice == 2 && stringSearch(student.studentName, searchString))
                 match = true;
-            else if (searchChoice == 3 && student.className.find(searchString) != string::npos)
+            else if (searchChoice == 3 && stringSearch(student.className, searchString))
                 match = true;
             else if (searchChoice == 4)
             {
                 for (int i = 0; i < 5; ++i)
                 {
-                    if (subjects[i].find(searchString) != string::npos)
+                    if (stringSearch(subjects[i], searchString))
                     {
                         cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[i] << " |  ";
                         if (student.grades[i] < 40)
@@ -550,7 +569,6 @@ public:
             cout << "\033[1;31mStudent Name not found.\033[0m" << endl;
         }
         delete[] results;
-
     }
 
     void ternarySearchByClass(StudentInfo *students, const string &className, int left, int right, int *results, int &resultsCount)
@@ -649,7 +667,6 @@ public:
             cout << "\033[1;31mClass not found.\033[0m" << endl;
         }
         delete[] results;
-
     }
 
     void ternarySearchBySubject(StudentInfo *students, const string &subject, int subjectIndex, int left, int right, int *results, int &resultsCount)
@@ -748,7 +765,6 @@ public:
             cout << "\033[1;31mNo results found for subject \"" << subject << "\".\033[0m" << endl;
         }
         delete[] results;
-
     }
 
     void ternarySearchMenu()
