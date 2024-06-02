@@ -760,7 +760,7 @@ public:
         loadStudents("students.txt", students, studentCount);
 
         cout << "==============================================================================================" << endl;
-        cout << "                                  SEARCH STUDENT" << endl;
+        cout << "                                  SEARCH CATEGORY" << endl;
         cout << "==============================================================================================" << endl;
 
         int choice;
@@ -768,6 +768,7 @@ public:
         cout << "[2] Search by Student Name" << endl;
         cout << "[3] Search by Class" << endl;
         cout << "[4] Search by Subject" << endl;
+        cout << "[5] Back to Assignment Menu" << endl;
         cout << "Enter your choice: ";
         cin >> choice;
 
@@ -798,8 +799,12 @@ public:
             getline(cin, searchStr);
             searchBySubject(students, studentCount, searchStr);
             break;
+        case 5:
+            return;
         default:
             cout << "\033[1;31mInvalid choice.\033[0m" << endl;
+            system("pause");
+            ternarySearchMenu();
             break;
         }
 
@@ -967,7 +972,7 @@ public:
                 ternarySearchMenu();
                 break;
             case 3:
-                // cocktailSort(); // 未实现的功能
+                // cocktailSort();
                 break;
             case 4:
                 heapSort();
