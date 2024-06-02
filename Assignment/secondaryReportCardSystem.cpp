@@ -4,6 +4,9 @@
 #include <sstream>
 #include <iomanip>
 #include <ctime>
+#include <conio.h>
+#include <limits>
+#include <cstdlib>
 
 using namespace std;
 
@@ -248,29 +251,248 @@ public:
         system("cls");
     }
 
-    void cocktailSort()
-    {
-        int choice;
-        system("cls");
-        cout << "================================================================================" << endl;
-        cout << "                                 SEARCH CATEGORY                                " << endl;
-        cout << "================================================================================" << endl;
-        cout << "Choose the category to sort by:" << endl;
-        cout << "[1] Student ID" << endl;
-        cout << "[2] Student Name" << endl;
-        cout << "[3] Student Class" << endl;
-        cout << "[4] Subject" << endl;
-        cout << "[5] Back to Assignment Menu" << endl;
-        cout << "================================================================================" << endl;
-        cout << "Enter your choice: ";
-        cin >> choice;
+    /*         cocktail sort              */
 
-        if (choice == 5)
-            return;
-        else if (choice == 1)
-        {
+    void swap(StudentInfo &a, StudentInfo &b) {
+        StudentInfo temp = a;
+        a = b;
+        b = temp;
+    }
+
+    void CocktailSort(StudentInfo s[], int n, int choice, int s_index = -1) {
+        bool swapped = true;
+        int start = 0;
+        int end = n - 1;
+
+        while (swapped) {
+            swapped = false;
+
+            for (int i = start; i < end; ++i) {
+                bool check = false;
+                switch (choice) {
+                    case 1:
+                        check = s[i].studentId > s[i + 1].studentId;
+                        break;
+                    case 2:
+                        check = s[i].studentName > s[i + 1].studentName;
+                        break;
+                    case 3:
+                        check = s[i].className > s[i + 1].className;
+                        break;
+                    case 4:
+                        check = s[i].grades[s_index] > s[i + 1].grades[s_index];
+                        break;
+                }
+                if (check) {
+                    swap(s[i], s[i + 1]);
+                    swapped = true;
+                }
+            }
+
+            if (!swapped)
+                break;
+
+            swapped = false;
+            --end;
+
+            for (int i = end - 1; i >= start; --i) {
+                bool check = false;
+                switch (choice) {
+                    case 1:
+                        check = s[i].studentId > s[i + 1].studentId;
+                        break;
+                    case 2:
+                        check = s[i].studentName > s[i + 1].studentName;
+                        break;
+                    case 3:
+                        check = s[i].className > s[i + 1].className;
+                        break;
+                    case 4:
+                        check = s[i].grades[s_index] > s[i + 1].grades[s_index];
+                        break;
+                }
+                if (check) {
+                    swap(s[i], s[i + 1]);
+                    swapped = true;
+                }
+            }
+
+            ++start;
         }
     }
+
+    string getGrade(float mark) {
+        if (mark >= 90) return "A+";
+        if (mark >= 80) return "A";
+        if (mark >= 75) return "A-";
+        if (mark >= 70) return "B+";
+        if (mark >= 65) return "B";
+        if (mark >= 60) return "B-";
+        if (mark >= 55) return "C-";
+        if (mark >= 50) return "C";
+        if (mark >= 47) return "C-";
+        if (mark >= 44) return "D+";
+        if (mark >= 40) return "D";
+        return "F";
+    }
+
+    void printHeader() {
+        
+        cout << "==============================================================================================\n";
+        cout << "                                SORTED RESULT\n";
+        cout << "==============================================================================================\n";
+        cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |\n";
+        cout << "----------------------------------------------------------------------------------------------\n";
+    }
+
+    void printStudents(const StudentInfo s[], int n, int choice = -1, int s_index = -1) {
+        printHeader();
+        string subjects[] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
+
+        for (int i = 0; i < n; ++i) {
+            cout << "| " << left << setw(3) << (i + 1) << " | "
+                << left << setw(15) << s[i].studentId << " | "
+                << left << setw(17) << s[i].studentName << " | "
+                << left << setw(8) << s[i].className << " |";
+
+            if (choice == 4 && s_index >= 0) {
+                if (s[i].grades[s_index] < 40) {
+                    cout << " " << left << setw(16) << subjects[s_index] << " | "
+                        << "\033[1;31m" << left << setw(10) << s[i].grades[s_index] << "\033[0m | "
+                        << left << setw(7) << getGrade(s[i].grades[s_index]) << " |\n";
+                } else {
+                    cout << " " << left << setw(16) << subjects[s_index] << " | "
+                        << "\033[1;32m" << left << setw(10) << s[i].grades[s_index] << "\033[0m | "
+                        << left << setw(7) << getGrade(s[i].grades[s_index]) << " |\n";
+                }
+            } else {
+                for (int j = 0; j < 5; ++j) {
+                    if (s[i].grades[j] < 40) {
+                        if (j > 0) {
+                            cout << "|     |                 |                   |          | ";
+                        }
+                        cout << left << setw(16) << subjects[j] << " | "
+                            << "\033[1;31m" << left << setw(8) << s[i].grades[j] << "\033[0m | "
+                            << left << setw(7) << getGrade(s[i].grades[j]) << " |\n";
+                    } else {
+                        if (j > 0) {
+                            cout << "|     |                 |                   |          | ";
+                        }
+                        cout << left << setw(16) << subjects[j] << " | "
+                            << "\033[1;32m" << left << setw(8) << s[i].grades[j] << "\033[0m | "
+                            << left << setw(7) << getGrade(s[i].grades[j]) << " |\n";
+                    }
+                }
+            }
+
+            cout << "----------------------------------------------------------------------------------------------\n";
+        }
+
+        cout << "==============================================================================================\n";
+    }
+
+    int readFile(const string &filename, StudentInfo s[], int maxSize) {
+        ifstream infile(filename.c_str());
+        string line;
+        int count = 0;
+
+        while (getline(infile, line) && count < maxSize) {
+            stringstream ss(line);
+            string token;
+
+            getline(ss, s[count].studentId, '|');
+            getline(ss, s[count].studentName, '|');
+            getline(ss, s[count].className, '|');
+
+            for (int i = 0; i < 5; ++i) {
+                getline(ss, token, '|');
+                stringstream gradeStream(token);
+                gradeStream >> s[count].grades[i];
+            }
+
+            ++count;
+        }
+
+        return count;
+    }
+
+    void keypress() {
+        cout << "Press Enter to continue...";
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin.get();
+    }
+
+    void sortAndDisplay(StudentInfo s[], int n, int choice) {
+        int s_index = -1;
+        if (choice == 4) {
+            cout << "Choose the subject to sort by:\n";
+            cout << "[0] Bahasa Melayu\n";
+            cout << "[1] English\n";
+            cout << "[2] Mathematics\n";
+            cout << "[3] History\n";
+            cout << "[4] Science\n";
+            cout << "Enter your choice: ";
+            cin >> s_index;
+        }
+        
+        for (int i = 0; i < 50; ++i) {
+            cout << endl;
+        }
+
+        CocktailSort(s, n, choice, s_index);
+        cout << "Sorted data by ";
+        switch (choice) {
+            case 1:
+                cout << "Student ID:\n";
+                break;
+            case 2:
+                cout << "Student Name:\n";
+                break;
+            case 3:
+                cout << "Student Class:\n";
+                break;
+            case 4:
+                cout << "Subject Marks:\n";
+                break;
+        }
+        printStudents(s, n, choice, s_index);
+
+        keypress();
+    }
+
+    void cocktailSort() {
+        const int maxSize = 100;
+        StudentInfo s[maxSize];
+        int n = readFile("students.txt", s, maxSize);
+
+        int choice = 0;
+        while (true) {
+            system("cls");
+            cout << "================================================================================\n";
+            cout << "                                 SEARCH CATEGORY                                \n";
+            cout << "================================================================================\n";
+            cout << "Choose the category to sort by:\n";
+            cout << "[1] Student ID\n";
+            cout << "[2] Student Name\n";
+            cout << "[3] Student Class\n";
+            cout << "[4] Subject Marks\n";
+            cout << "[5] Back to Assignment Menu\n";
+            cout << "================================================================================\n";
+            cout << "Enter your choice: ";
+            cin >> choice;
+
+            if (choice >= 1 && choice <= 4) {
+                system("cls");
+                sortAndDisplay(s, n, choice);
+            } else if (choice == 5) {
+                break;
+            } else {
+                cout << "Invalid choice. Please try again." << endl;
+            }
+        }
+    }
+
+    /*          end of cocktail sort              */
 
     void stringSearch()
     {
@@ -983,7 +1205,7 @@ public:
                 ternarySearchMenu();
                 break;
             case 3:
-                // cocktailSort(); // 未实现的功能
+                cocktailSort();
                 break;
             case 4:
                 heapSort();
