@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -1031,3 +1032,6 @@ int main()
 
     return 0;
 }
+=======
+system("cls");
+>>>>>>> 8481cc67669573b18f190cd955b19f681cefe2d0
