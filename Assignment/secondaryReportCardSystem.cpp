@@ -1125,61 +1125,100 @@ public:
             cout << "[4] Science" << endl;
             cout << "Enter your choice: ";
             cin >> subjectIndex;
-        }
-
-        int n = studentCount;
-
-        for (int i = n / 2 - 1; i >= 0; i--)
-        {
-            heapify(students, n, i, sortChoice, subjectIndex);
-        }
-
-        for (int i = n - 1; i > 0; i--)
-        {
-            swap(students[0], students[i]);
-            heapify(students, i, 0, sortChoice, subjectIndex);
-        }
-
-        cout << "==============================================================================================" << endl;
-        cout << "                                SORTED RESULT" << endl;
-        cout << "==============================================================================================" << endl;
-        cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
-        cout << "----------------------------------------------------------------------------------------------" << endl;
-
-        string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
-        int no = 1;
-
-        for (int i = 0; i < n; ++i)
-        {
-            const StudentInfo &student = students[i];
-            for (int j = 0; j < 5; ++j)
+            int n = studentCount;
+            for (int i = n / 2 - 1; i >= 0; i--)
             {
-                if (j == 0)
+                heapify(students, n, i, sortChoice, subjectIndex);
+            }
+
+            for (int i = n - 1; i > 0; i--)
+            {
+                swap(students[0], students[i]);
+                heapify(students, i, 0, sortChoice, subjectIndex);
+            }
+            cout << "==============================================================================================" << endl;
+            cout << "                                SORTED RESULT" << endl;
+            cout << "==============================================================================================" << endl;
+            cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
+            cout << "----------------------------------------------------------------------------------------------" << endl;
+
+            string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
+            int no = 1;
+
+            for (int i = 0; i < n; ++i)
+            {
+                const StudentInfo &student = students[i];
+                cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[subjectIndex] << " | ";
+            
+                if (student.grades[subjectIndex] < 40.0f)
                 {
-                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[j] << " | ";
+                    cout << "\033[1;31m" << setw(8) << left << student.grades[subjectIndex];
                 }
                 else
                 {
-                    cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[j] << " | ";
+                    cout << "\033[1;32m" << setw(8) << left << student.grades[subjectIndex];
                 }
-
-                if (student.grades[j] < 40.0f)
-                {
-                    cout << "\033[1;31m" << setw(8) << left << student.grades[j];
-                }
-                else
-                {
-                    cout << "\033[1;32m" << setw(8) << left << student.grades[j];
-                }
-                cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[j]) << " |" << endl;
+                cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[subjectIndex]) << " |" << endl;
             }
-            if (i != n - 1)
-            {
-                cout << "----------------------------------------------------------------------------------------------" << endl;
-            }
+            cout << "==============================================================================================" << endl;
+            system("pause");
         }
-        cout << "==============================================================================================" << endl;
-        system("pause");
+        else
+        {
+            int n = studentCount;
+
+            for (int i = n / 2 - 1; i >= 0; i--)
+            {
+                heapify(students, n, i, sortChoice, subjectIndex);
+            }
+
+            for (int i = n - 1; i > 0; i--)
+            {
+                swap(students[0], students[i]);
+                heapify(students, i, 0, sortChoice, subjectIndex);
+            }
+
+            cout << "==============================================================================================" << endl;
+            cout << "                                SORTED RESULT" << endl;
+            cout << "==============================================================================================" << endl;
+            cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
+            cout << "----------------------------------------------------------------------------------------------" << endl;
+
+            string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
+            int no = 1;
+
+            for (int i = 0; i < n; ++i)
+            {
+                const StudentInfo &student = students[i];
+                for (int j = 0; j < 5; ++j)
+                {
+                    if (j == 0)
+                    {
+                        cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[j] << " | ";
+                    }
+                    else
+                    {
+                        cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[j] << " | ";
+                    }
+
+                    if (student.grades[j] < 40.0f)
+                    {
+                        cout << "\033[1;31m" << setw(8) << left << student.grades[j];
+                    }
+                    else
+                    {
+                        cout << "\033[1;32m" << setw(8) << left << student.grades[j];
+                    }
+                    cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[j]) << " |" << endl;
+                }
+                if (i != n - 1)
+                {
+                    cout << "----------------------------------------------------------------------------------------------" << endl;
+                }
+            }
+            cout << "==============================================================================================" << endl;
+            system("pause");
+        }
     }
 
     void assignmentMenu()
