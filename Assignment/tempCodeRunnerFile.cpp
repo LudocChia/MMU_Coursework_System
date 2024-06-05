@@ -1,1 +1,1 @@
-system("cls");
+ind(key
