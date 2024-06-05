@@ -1020,7 +1020,8 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
 
     if (resultsCount > 0)
     {
-        cout << "Results for subject \"" << subject << "\":" << endl;
+        cout << "==============================================================================================" << endl;
+        cout << "                                       SEARCH RESULTS" << endl;
         cout << "==============================================================================================" << endl;
         cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
         cout << "----------------------------------------------------------------------------------------------" << endl;
@@ -1038,7 +1039,12 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
                 cout << "\033[1;32m" << setw(4) << right << fixed << setprecision(1) << student.grades[subjectIndex] << "   ";
             }
             cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[subjectIndex]) << " |" << endl;
+            if (i != resultsCount - 1)
+            {
+                cout << "----------------------------------------------------------------------------------------------" << endl;
+            }
         }
+        cout << "----------------------------------------------------------------------------------------------" << endl;
         cout << "==============================================================================================" << endl;
     }
     else
@@ -1047,6 +1053,7 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
     }
     delete[] results;
 }
+
 
     void ternarySearchMenu()
     {
@@ -1066,6 +1073,7 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
         cout << "[3] Search by Class" << endl;
         cout << "[4] Search by Subject" << endl;
         cout << "[5] Back to Assignment Menu" << endl;
+        cout << "==============================================================================================" << endl;
         cout << "Enter your choice: ";
         cin >> choice;
 
