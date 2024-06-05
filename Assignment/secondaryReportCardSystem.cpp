@@ -469,7 +469,7 @@ public:
         while (true) {
             system("cls");
             cout << "================================================================================\n";
-            cout << "                                 SEARCH CATEGORY                                \n";
+            cout << "                                 SORT CATEGORY                                \n";
             cout << "================================================================================\n";
             cout << "Choose the category to sort by:\n";
             cout << "[1] Student ID\n";
