@@ -4,6 +4,6 @@
                 "ostream": "cpp",
                 "functional": "cpp",
                 "vector": "cpp",
-                "xstring": "cpp"
+                "ios": "cpp"
         }
 }
