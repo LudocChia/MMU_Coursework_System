@@ -326,12 +326,11 @@ public:
         if (mark >= 80) return "A";
         if (mark >= 75) return "A-";
         if (mark >= 70) return "B+";
-        if (mark >= 65) return "B";
-        if (mark >= 60) return "B-";
-        if (mark >= 55) return "C-";
-        if (mark >= 50) return "C";
-        if (mark >= 47) return "C-";
-        if (mark >= 44) return "D+";
+        if (mark >= 68) return "B-";
+        if (mark >= 65) return "C+";
+        if (mark >= 60) return "C";
+        if (mark >= 56) return "C-";
+        if (mark >= 50) return "D+";
         if (mark >= 40) return "D";
         return "F";
     }
@@ -371,14 +370,14 @@ public:
                         if (j > 0) {
                             cout << "|     |                 |                   |          | ";
                         }
-                        cout << left << setw(16) << subjects[j] << " | "
+                        cout <<left << setw(16) <<subjects[j] << " | "
                             << "\033[1;31m" << left << setw(8) << s[i].grades[j] << "\033[0m | "
                             << left << setw(7) << getGrade(s[i].grades[j]) << " |\n";
                     } else {
                         if (j > 0) {
                             cout << "|     |                 |                   |          | ";
                         }
-                        cout << left << setw(16) << subjects[j] << " | "
+                        cout << left << setw(16) <<subjects[j] << " | "
                             << "\033[1;32m" << left << setw(8) << s[i].grades[j] << "\033[0m | "
                             << left << setw(7) << getGrade(s[i].grades[j]) << " |\n";
                     }
