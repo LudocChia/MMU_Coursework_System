@@ -349,7 +349,7 @@ public:
         printHeader();
         string subjects[] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
 
-        for (int i = 0; i < n; ++i) {
+        for (int i = 1; i < n; ++i) {
             cout << "| " << left << setw(3) << (i + 1) << " | "
                 << left << setw(15) << s[i].studentId << " | "
                 << left << setw(17) << s[i].studentName << " | "
