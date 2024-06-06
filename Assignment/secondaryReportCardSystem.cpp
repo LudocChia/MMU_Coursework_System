@@ -326,12 +326,11 @@ public:
         if (mark >= 80) return "A";
         if (mark >= 75) return "A-";
         if (mark >= 70) return "B+";
-        if (mark >= 65) return "B";
-        if (mark >= 60) return "B-";
-        if (mark >= 55) return "C-";
-        if (mark >= 50) return "C";
-        if (mark >= 47) return "C-";
-        if (mark >= 44) return "D+";
+        if (mark >= 68) return "B-";
+        if (mark >= 65) return "C+";
+        if (mark >= 60) return "C";
+        if (mark >= 56) return "C-";
+        if (mark >= 50) return "D+";
         if (mark >= 40) return "D";
         return "F";
     }
@@ -371,14 +370,14 @@ public:
                         if (j > 0) {
                             cout << "|     |                 |                   |          | ";
                         }
-                        cout << left << setw(16) << subjects[j] << " | "
+                        cout <<left << setw(16) <<subjects[j] << " | "
                             << "\033[1;31m" << left << setw(8) << s[i].grades[j] << "\033[0m | "
                             << left << setw(7) << getGrade(s[i].grades[j]) << " |\n";
                     } else {
                         if (j > 0) {
                             cout << "|     |                 |                   |          | ";
                         }
-                        cout << left << setw(16) << subjects[j] << " | "
+                        cout << left << setw(16) <<subjects[j] << " | "
                             << "\033[1;32m" << left << setw(8) << s[i].grades[j] << "\033[0m | "
                             << left << setw(7) << getGrade(s[i].grades[j]) << " |\n";
                     }
@@ -1143,7 +1142,7 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
                 largest = left;
             if (right < n && students[right].className > students[largest].className)
                 largest = right;
-            break;
+        break;
         case 4:
             if (left < n && students[left].grades[subjectIndex] > students[largest].grades[subjectIndex])
                 largest = left;
@@ -1181,7 +1180,6 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
         {
             return;
         }
-
         int subjectIndex = 0;
         if (sortChoice == 4)
         {
@@ -1193,6 +1191,46 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
             cout << "[4] Science" << endl;
             cout << "Enter your choice: ";
             cin >> subjectIndex;
+            int n = studentCount;
+
+            for (int i = n / 2 - 1; i >= 0; i--)
+            {
+                heapify(students, n, i, sortChoice, subjectIndex);
+            }
+
+            for (int i = n - 1; i > 0; i--)
+            {
+                swap(students[0], students[i]);
+                heapify(students, i, 0, sortChoice, subjectIndex);
+            }
+
+            cout << "==============================================================================================" << endl;
+            cout << "                                SORTED RESULT" << endl;
+            cout << "==============================================================================================" << endl;
+            cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
+            cout << "----------------------------------------------------------------------------------------------" << endl;
+
+            string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
+            int no = 1;
+
+            for (int i = 0; i < n; ++i)
+            {
+                const StudentInfo &student = students[i];
+                cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[subjectIndex] << " | ";
+                if (student.grades[subjectIndex] < 40.0f)
+                {
+                    cout << "\033[1;31m" << setw(8) << left << student.grades[subjectIndex];
+                }
+                else
+                {
+                    cout << "\033[1;32m" << setw(8) << left << student.grades[subjectIndex];
+                }
+                cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[subjectIndex]) << " |" << endl;
+            }
+
+            cout << "==============================================================================================" << endl;
+            system("pause");
+            return;
         }
 
         int n = studentCount;
