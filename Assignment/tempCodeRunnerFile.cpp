@@ -1,1 +1,1 @@
-Bahasa Melayu
+system("pause");
