@@ -5,6 +5,8 @@
                 "functional": "cpp",
                 "vector": "cpp",
                 "ios": "cpp",
-                "iomanip": "cpp"
+                "iomanip": "cpp",
+                "string": "cpp",
+                "string_view": "cpp"
         }
 }

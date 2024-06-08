@@ -253,17 +253,18 @@ public:
 
     /*         cocktail sort              */
 
-    void swap(StudentInfo &a, StudentInfo &b) {
+    void swap(StudentInfo &a, StudentInfo &b) {//swap value of two object
         StudentInfo temp = a;
         a = b;
         b = temp;
     }
 
-    void CocktailSort(StudentInfo s[], int n, int choice, int s_index = -1) {
-        bool swapped = true;
+    void CocktailSort(StudentInfo s[], int n, int choice, int s_index = -1) {//s_index is used if choice is 4
+        bool swapped = true; //track issit have any elements to swap
         int start = 0;
         int end = n - 1;
 
+        //if true then continue loop
         while (swapped) {
             swapped = false;
 
@@ -271,27 +272,32 @@ public:
                 bool check = false;
                 switch (choice) {
                     case 1:
-                        check = s[i].studentId > s[i + 1].studentId;
+                        check = s[i].studentId > s[i + 1].studentId;//compare id
                         break;
                     case 2:
-                        check = s[i].studentName > s[i + 1].studentName;
+                        check = s[i].studentName > s[i + 1].studentName;//compare name
                         break;
                     case 3:
-                        check = s[i].className > s[i + 1].className;
+                        check = s[i].className > s[i + 1].className;//compare subject
                         break;
                     case 4:
-                        check = s[i].grades[s_index] > s[i + 1].grades[s_index];
+                        check = s[i].grades[s_index] > s[i + 1].grades[s_index];//compare grades
                         break;
                 }
+
+                //if out of order, then swap them n set swapped to true
                 if (check) {
                     swap(s[i], s[i + 1]);
                     swapped = true;
                 }
             }
 
+            //check if no swaps occur
             if (!swapped)
                 break;
 
+
+            //reverse iterate back
             swapped = false;
             --end;
 
@@ -317,11 +323,11 @@ public:
                 }
             }
 
-            ++start;
+            ++start;//increment because first elemtn is in correct position
         }
     }
 
-    string getGrade(float mark) {
+    string getGrade(float mark) {//get mark
         if (mark >= 90) return "A+";
         if (mark >= 80) return "A";
         if (mark >= 75) return "A-";
@@ -349,21 +355,29 @@ public:
         string subjects[] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
 
         for (int i = 1; i < n; ++i) {
+            //print info
             cout << "| " << left << setw(3) << (i + 1) << " | "
                 << left << setw(15) << s[i].studentId << " | "
                 << left << setw(17) << s[i].studentName << " | "
                 << left << setw(8) << s[i].className << " |";
 
+            //if choice is 4 n got sindex
             if (choice == 4 && s_index >= 0) {
+
+                //display red font for grade n specific subject
                 if (s[i].grades[s_index] < 40) {
                     cout << " " << left << setw(16) << subjects[s_index] << " | "
                         << "\033[1;31m" << left << setw(10) << s[i].grades[s_index] << "\033[0m | "
                         << left << setw(7) << getGrade(s[i].grades[s_index]) << " |\n";
+
+                //display green font for grade
                 } else {
                     cout << " " << left << setw(16) << subjects[s_index] << " | "
                         << "\033[1;32m" << left << setw(10) << s[i].grades[s_index] << "\033[0m | "
                         << left << setw(7) << getGrade(s[i].grades[s_index]) << " |\n";
                 }
+
+            //print grades for all subject
             } else {
                 for (int j = 0; j < 5; ++j) {
                     if (s[i].grades[j] < 40) {
@@ -391,13 +405,13 @@ public:
     }
 
     int readFile(const string &filename, StudentInfo s[], int maxSize) {
-        ifstream infile(filename.c_str());
+        ifstream infile(filename.c_str());//read from file
         string line;
-        int count = 0;
+        int count = 0;//track the num of stud read
 
         while (getline(infile, line) && count < maxSize) {
             stringstream ss(line);
-            string token;
+            string token;//hold each token parse from line
 
             getline(ss, s[count].studentId, '|');
             getline(ss, s[count].studentName, '|');
@@ -406,23 +420,25 @@ public:
             for (int i = 0; i < 5; ++i) {
                 getline(ss, token, '|');
                 stringstream gradeStream(token);
-                gradeStream >> s[count].grades[i];
+                gradeStream >> s[count].grades[i];//store in grades array
             }
 
-            ++count;
+            ++count;//move to next student
         }
 
-        return count;
+        return count;//return how many student read
     }
 
     void keypress() {
         cout << "Press Enter to continue...";
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cin.get();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');//ignore many characters as possible
+        cin.get();//wait user press enter
     }
+
 
     void sortAndDisplay(StudentInfo s[], int n, int choice) {
         int s_index = -1;
+
         if (choice == 4) {
             cout << "Choose the subject to sort by:\n";
             cout << "[0] Bahasa Melayu\n";
@@ -438,6 +454,7 @@ public:
             cout << endl;
         }
 
+        //pass choice and swap then display corresponding header
         CocktailSort(s, n, choice, s_index);
         cout << "Sorted data by ";
         switch (choice) {
@@ -454,11 +471,14 @@ public:
                 cout << "Subject Marks:\n";
                 break;
         }
+
+        //print body
         printStudents(s, n, choice, s_index);
 
         keypress();
     }
 
+    //menu of cocktail sort
     void cocktailSort() {
         const int maxSize = 100;
         StudentInfo s[maxSize];
