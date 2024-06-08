@@ -224,11 +224,13 @@ public:
             {
                 if (j == 2)
                 {
-                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[j] << " |  ";
+                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left 
+                    << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[j] << " |  ";
                 }
                 else
                 {
-                    cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[j] << " |  ";
+                    cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) 
+                    << left << "" << " | " << setw(15) << left << subjects[j] << " |  ";
                 }
 
                 if (student.grades[j] < 40)
@@ -517,10 +519,10 @@ public:
     {
         StudentInfo *students = nullptr;
         int studentCount = 0;
-        loadStudents("students.txt", students, studentCount);
+        loadStudents("students.txt", students, studentCount); // Load student data from file
 
         int searchChoice;
-        system("cls");
+        system("cls"); // Clear the console
         cout << "================================================================================" << endl;
         cout << "                                 SEARCH CATEGORY                                " << endl;
         cout << "================================================================================" << endl;
@@ -532,11 +534,11 @@ public:
         cout << "[5] Back to Assignment Menu" << endl;
         cout << "================================================================================" << endl;
         cout << "Enter your choice: ";
-        cin >> searchChoice;
+        cin >> searchChoice; // User selects the search category
 
         if (searchChoice == 5)
         {
-            return;
+            return; // Return to the previous menu(assignment menu) if user chooses option 5
         }
 
         string searchString;
@@ -544,18 +546,18 @@ public:
         {
             cout << "Enter the string to search for: ";
             cin.ignore();
-            getline(cin, searchString);
+            getline(cin, searchString); // Get the search string from user
         }
         else
         {
             cout << "Invalid choice!" << endl;
-            return;
+            return; // Invalid choice, return to previous menu
         }
 
         system("cls");
         bool found = false;
         string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
-        int no = 1;
+        int no = 1; // Record counter for output
 
         cout << "==============================================================================================" << endl;
         cout << "                                       SEARCH RESULTS" << endl;
@@ -563,6 +565,7 @@ public:
         cout << "| No. | Student ID      | Student Name       | Class    | Subject         | Mark    | Grade  |" << endl;
         cout << "----------------------------------------------------------------------------------------------" << endl;
 
+        // Lambda function for string searching
         bool (*stringSearch)(const string &, const string &) = [](const string &text, const string &pattern)
         {
             int textLength = text.length();
@@ -573,14 +576,15 @@ public:
                 for (j = 0; j < patternLength; ++j)
                 {
                     if (text[i + j] != pattern[j])
-                        break;
+                        break; // Break if character mismatch
                 }
                 if (j == patternLength)
-                    return true;
+                    return true; // Return true if pattern is found
             }
-            return false;
+            return false; // Return false if pattern is not found
         };
 
+        // Iterate through student records and search for matching criteria
         for (int studentIndex = 0; studentIndex < studentCount; ++studentIndex)
         {
             const StudentInfo &student = students[studentIndex];
@@ -597,14 +601,15 @@ public:
                 {
                     if (stringSearch(subjects[i], searchString))
                     {
-                        cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[i] << " |  ";
+                        cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName 
+                        << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[i] << " |  ";
                         if (student.grades[i] < 40)
                         {
-                            cout << "\033[1;31m" << setw(6) << left << student.grades[i];
+                            cout << "\033[1;31m" << setw(6) << left << student.grades[i]; // Red font for low grades
                         }
                         else
                         {
-                            cout << "\033[1;32m" << setw(6) << left << student.grades[i];
+                            cout << "\033[1;32m" << setw(6) << left << student.grades[i]; // Green font for passing grades
                         }
                         cout << "\033[0m" << " |  " << setw(6) << left << getGradeLetter(student.grades[i]) << "|" << endl;
                         if (studentIndex != studentCount - 1 || i != 4)
@@ -616,10 +621,12 @@ public:
                 }
             }
 
+             // Display search results
             if (match && searchChoice != 4)
             {
                 found = true;
-                cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[0] << " | ";
+                cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName 
+                << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[0] << " | ";
                 if (student.grades[0] < 40)
                 {
                     cout << "\033[1;31m" << setw(6) << left << student.grades[0];
@@ -654,7 +661,7 @@ public:
             cout << "No student information found with the given criteria." << endl;
         }
         cout << "==============================================================================================" << endl;
-        system("pause");
+        system("pause"); // Pause system to view results
     }
 
 void ternarySearch(StudentInfo *students, const string &key, int left, int right, int *results, int &resultsCount, bool byName = false)
@@ -670,7 +677,7 @@ void ternarySearch(StudentInfo *students, const string &key, int left, int right
             if (results[i] == mid1)
             {
                 found_mid1 = true;
-                break;
+                break; // Avoid duplicate results
             }
         }
 
@@ -679,20 +686,20 @@ void ternarySearch(StudentInfo *students, const string &key, int left, int right
         {
             if (students[mid1].studentName.substr(0, key.size()) == key)
             {
-                match_mid1 = true;
+                match_mid1 = true; // Match based on student name
             }
         }
         else
         {
             if (students[mid1].studentId.substr(0, key.size()) == key)
             {
-                match_mid1 = true;
+                match_mid1 = true; // Match based on student ID
             }
         }
 
         if (match_mid1 && !found_mid1)
         {
-            results[resultsCount++] = mid1;
+            results[resultsCount++] = mid1; // Add result if matched
         }
 
         bool found_mid2 = false;
@@ -701,7 +708,7 @@ void ternarySearch(StudentInfo *students, const string &key, int left, int right
             if (results[i] == mid2)
             {
                 found_mid2 = true;
-                break;
+                break; // Avoid duplicate results
             }
         }
 
@@ -710,14 +717,14 @@ void ternarySearch(StudentInfo *students, const string &key, int left, int right
         {
             if (students[mid2].studentName.substr(0, key.size()) == key)
             {
-                match_mid2 = true;
+                match_mid2 = true; // Match based on student name
             }
         }
         else
         {
             if (students[mid2].studentId.substr(0, key.size()) == key)
             {
-                match_mid2 = true;
+                match_mid2 = true; // Match based on student ID
             }
         }
 
@@ -726,6 +733,7 @@ void ternarySearch(StudentInfo *students, const string &key, int left, int right
             results[resultsCount++] = mid2;
         }
 
+         // Recursive calls to search the remaining portions
         ternarySearch(students, key, left, mid1 - 1, results, resultsCount, byName);
         ternarySearch(students, key, mid1 + 1, mid2 - 1, results, resultsCount, byName);
         ternarySearch(students, key, mid2 + 1, right, results, resultsCount, byName);
@@ -735,9 +743,9 @@ void ternarySearch(StudentInfo *students, const string &key, int left, int right
 void searchByStudentID(StudentInfo *students, int studentCount, const string &id)
 {
     system("cls");
-    int *results = new int[studentCount];
+    int *results = new int[studentCount]; // Dynamic array to store search results
     int resultsCount = 0;
-    ternarySearch(students, id, 0, studentCount - 1, results, resultsCount);
+    ternarySearch(students, id, 0, studentCount - 1, results, resultsCount); // Call ternary search for student ID
 
     if (resultsCount > 0)
     {
@@ -756,11 +764,13 @@ void searchByStudentID(StudentInfo *students, int studentCount, const string &id
             {
                 if (j == 2)
                 {
-                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[j] << " | ";
+                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " 
+                    << setw(8) << left << student.className << " | " << setw(15) << left << subjects[j] << " | ";
                 }
                 else
                 {
-                    cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[j] << " | ";
+                    cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " 
+                    << setw(15) << left << subjects[j] << " | ";
                 }
 
                 if (student.grades[j] < 40.0f)
@@ -790,9 +800,10 @@ void searchByStudentID(StudentInfo *students, int studentCount, const string &id
 void searchByStudentName(StudentInfo *students, int studentCount, const string &name)
 {
     system("cls");
-    int *results = new int[studentCount];
+    int *results = new int[studentCount]; // Dynamic array to store search results
     int resultsCount = 0;
-    ternarySearch(students, name, 0, studentCount - 1, results, resultsCount, true);
+    ternarySearch(students, name, 0, studentCount - 1, results, resultsCount, true); // Call ternary search for student name
+
 
     if (resultsCount > 0)
     {
@@ -811,11 +822,13 @@ void searchByStudentName(StudentInfo *students, int studentCount, const string &
             {
                 if (j == 2)
                 {
-                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[j] << " | ";
+                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName 
+                    << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[j] << " | ";
                 }
                 else
                 {
-                    cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[j] << " | ";
+                    cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left 
+                    << "" << " | " << setw(15) << left << subjects[j] << " | ";
                 }
 
                 if (student.grades[j] < 40.0f)
@@ -866,7 +879,7 @@ void ternarySearchByClass(StudentInfo *students, const string &className, int le
             if (students[mid1].className.substr(i, className.size()) == className)
             {
                 match_mid1 = true;
-                break;
+                break; // Match based on class name that entered by user
             }
         }
 
@@ -891,7 +904,7 @@ void ternarySearchByClass(StudentInfo *students, const string &className, int le
             if (students[mid2].className.substr(i, className.size()) == className)
             {
                 match_mid2 = true;
-                break;
+                break; // Match based on class name that entered by user
             }
         }
 
@@ -900,6 +913,7 @@ void ternarySearchByClass(StudentInfo *students, const string &className, int le
             results[resultsCount++] = mid2;
         }
 
+        // Recursive calls to search the remaining portions
         ternarySearchByClass(students, className, left, mid1 - 1, results, resultsCount);
         ternarySearchByClass(students, className, mid1 + 1, mid2 - 1, results, resultsCount);
         ternarySearchByClass(students, className, mid2 + 1, right, results, resultsCount);
@@ -911,7 +925,7 @@ void searchByClass(StudentInfo *students, int studentCount, const string &classN
     system("cls");
     int *results = new int[studentCount];
     int resultsCount = 0;
-    ternarySearchByClass(students, className, 0, studentCount - 1, results, resultsCount);
+    ternarySearchByClass(students, className, 0, studentCount - 1, results, resultsCount); // Call ternary search for class
 
     if (resultsCount > 0)
     {
@@ -930,11 +944,13 @@ void searchByClass(StudentInfo *students, int studentCount, const string &classN
             {
                 if (j == 2)
                 {
-                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[j] << " | ";
+                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName 
+                    << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[j] << " | ";
                 }
                 else
                 {
-                    cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[j] << " | ";
+                    cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left 
+                    << "" << " | " << setw(15) << left << subjects[j] << " | ";
                 }
 
                 if (student.grades[j] < 40.0f)
@@ -974,13 +990,13 @@ void ternarySearchBySubject(StudentInfo *students, const string &subject, int su
             if (results[i] == mid1)
             {
                 found_mid1 = true;
-                break;
+                break; // Avoid duplicate results
             }
         }
 
         if (students[mid1].grades[subjectIndex] != -1 && !found_mid1)
         {
-            results[resultsCount++] = mid1;
+            results[resultsCount++] = mid1; // Add result if matched
         }
 
         bool found_mid2 = false;
@@ -989,15 +1005,16 @@ void ternarySearchBySubject(StudentInfo *students, const string &subject, int su
             if (results[i] == mid2)
             {
                 found_mid2 = true;
-                break;
+                break; // Avoid duplicate results
             }
         }
 
         if (students[mid2].grades[subjectIndex] != -1 && !found_mid2)
         {
-            results[resultsCount++] = mid2;
+            results[resultsCount++] = mid2; // Add result if matched
         }
 
+        // Recursive calls to search the remaining portions
         ternarySearchBySubject(students, subject, subjectIndex, left, mid1 - 1, results, resultsCount);
         ternarySearchBySubject(students, subject, subjectIndex, mid1 + 1, mid2 - 1, results, resultsCount);
         ternarySearchBySubject(students, subject, subjectIndex, mid2 + 1, right, results, resultsCount);
@@ -1018,20 +1035,21 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
             if (subjects[i].substr(j, subject.size()) == subject)
             {
                 match = true;
-                break;
+                break; // Match based on subject name
+
             }
         }
         if (match)
         {
             subjectIndex = i;
-            break;
+            break; // Get subject index for searching
         }
     }
 
     if (subjectIndex == -1)
     {
         cout << "\033[1;31mInvalid subject.\033[0m" << endl;
-        return;
+        return; // Invalid subject
     }
 
     int *results = new int[studentCount];
@@ -1049,7 +1067,8 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
         for (int i = 0; i < resultsCount; ++i)
         {
             const StudentInfo &student = students[results[i]];
-            cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[subjectIndex] << " | ";
+            cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName 
+            << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[subjectIndex] << " | ";
             if (student.grades[subjectIndex] < 40.0f)
             {
                 cout << "\033[1;31m" << setw(4) << right << fixed << setprecision(1) << student.grades[subjectIndex] << "   ";
@@ -1081,7 +1100,7 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
 
         StudentInfo *students = nullptr;
         int studentCount = 0;
-        loadStudents("students.txt", students, studentCount);
+        loadStudents("students.txt", students, studentCount); // Load students from file students.txt
 
         cout << "==============================================================================================" << endl;
         cout << "                                  SEARCH CATEGORY" << endl;
@@ -1095,7 +1114,7 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
         cout << "[5] Back to Assignment Menu" << endl;
         cout << "==============================================================================================" << endl;
         cout << "Enter your choice: ";
-        cin >> choice;
+        cin >> choice; // Get user choice for search category
 
         string searchStr;
         float searchGrade;
@@ -1104,32 +1123,32 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
         case 1:
             cout << "Enter Student ID to search: ";
             cin >> searchStr;
-            searchByStudentID(students, studentCount, searchStr);
+            searchByStudentID(students, studentCount, searchStr); // Call search by Student ID
             break;
         case 2:
             cout << "Enter Student Name to search: ";
             cin.ignore();
             getline(cin, searchStr);
-            searchByStudentName(students, studentCount, searchStr);
+            searchByStudentName(students, studentCount, searchStr); // Call search by Student Name
             break;
         case 3:
             cout << "Enter Class to search: ";
             cin.ignore();
             getline(cin, searchStr);
-            searchByClass(students, studentCount, searchStr);
+            searchByClass(students, studentCount, searchStr); // Call search by Class
             break;
         case 4:
             cout << "Enter Subject to search: ";
             cin.ignore();
             getline(cin, searchStr);
-            searchBySubject(students, studentCount, searchStr);
+            searchBySubject(students, studentCount, searchStr); // Call search by Subject
             break;
         case 5:
-            return;
+            return;// Exit to the previous menu (assignment menu)
         default:
             cout << "\033[1;31mInvalid choice.\033[0m" << endl;
             system("pause");
-            ternarySearchMenu();
+            ternarySearchMenu(); // Re-display the menu on invalid choice
             break;
         }
 
@@ -1236,7 +1255,8 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
             for (int i = 0; i < n; ++i)
             {
                 const StudentInfo &student = students[i];// Reference to current student
-                cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[subjectIndex] << " | ";
+                cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName 
+                << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[subjectIndex] << " | ";
                 if (student.grades[subjectIndex] < 40.0f)
                 {
                     // Print student details for the first subject
@@ -1284,11 +1304,13 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
             {
                 if (j == 0)
                 {
-                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[j] << " | ";
+                    cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName 
+                    << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[j] << " | ";
                 }
                 else
                 {
-                    cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left << "" << " | " << setw(15) << left << subjects[j] << " | ";
+                    cout << "| " << setw(3) << left << "" << " | " << setw(15) << left << "" << " | " << setw(18) << left << "" << " | " << setw(8) << left 
+                    << "" << " | " << setw(15) << left << subjects[j] << " | ";
                 }
 
                 if (student.grades[j] < 40.0f)
