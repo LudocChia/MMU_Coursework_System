@@ -1119,54 +1119,54 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
 
     void heapify(StudentInfo *students, int n, int i, int sortChoice, int subjectIndex = 0)
     {
-        int largest = i;
-        int left = 2 * i + 1;
-        int right = 2 * i + 2;
+        int largest = i; // Initialize largest as root
+        int left = 2 * i + 1; // left = 2*i + 1
+        int right = 2 * i + 2; // right = 2*i + 2
 
-        switch (sortChoice)
+        switch (sortChoice) // Compare left child with the largest node based on sortChoice
         {
-        case 1:
+        case 1:// Sort by studentId
             if (left < n && students[left].studentId > students[largest].studentId)
-                largest = left;
+                largest = left; // Update largest if left child is larger
             if (right < n && students[right].studentId > students[largest].studentId)
-                largest = right;
+                largest = right; // Update largest if right child is larger
             break;
-        case 2:
+        case 2:// Sort by studentName
             if (left < n && students[left].studentName > students[largest].studentName)
-                largest = left;
+                largest = left;  // Update largest if left child is larger
             if (right < n && students[right].studentName > students[largest].studentName)
-                largest = right;
+                largest = right;// Update largest if right child is larger
             break;
-        case 3:
+        case 3:// Sort by className
             if (left < n && students[left].className > students[largest].className)
-                largest = left;
+                largest = left;// Update largest if left child is larger
             if (right < n && students[right].className > students[largest].className)
-                largest = right;
+                largest = right;// Update largest if right child is larger
         break;
-        case 4:
+        case 4:// Sort by grades[subjectIndex]
             if (left < n && students[left].grades[subjectIndex] > students[largest].grades[subjectIndex])
-                largest = left;
+                largest = left;// Update largest if left child is larger
             if (right < n && students[right].grades[subjectIndex] > students[largest].grades[subjectIndex])
-                largest = right;
+                largest = right;// Update largest if right child is larger
             break;
         default:
-            break;
+            break;// No valid sort choice
         }
 
-        if (largest != i)
+        if (largest != i)// If the largest element is not the root
         {
-            swap(students[i], students[largest]);
-            heapify(students, n, largest, sortChoice, subjectIndex);
+            swap(students[i], students[largest]);// Swap the root with the largest element
+            heapify(students, n, largest, sortChoice, subjectIndex); // Recursively heapify the affected sub-tree
         }
     }
 
     void heapSort()
     {
-        StudentInfo *students = nullptr;
-        int studentCount = 0;
-        loadStudents("students.txt", students, studentCount);
+        StudentInfo *students = nullptr; // Pointer to hold array of students
+        int studentCount = 0;  // Initialize the number of students
+        loadStudents("students.txt", students, studentCount);// Load students from file
 
-        int sortChoice;
+        int sortChoice;// Variable to hold user's sorting choice
         cout << "Choose the field to sort by:" << endl;
         cout << "[1] Student ID" << endl;
         cout << "[2] Student Name" << endl;
@@ -1174,13 +1174,13 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
         cout << "[4] Subject Mark" << endl;
         cout << "[5] Back to Assignment Menu" << endl;
         cout << "Enter your choice: ";
-        cin >> sortChoice;
+        cin >> sortChoice;// Get user's sorting choice
 
         if (sortChoice == 5)
         {
-            return;
+            return;// Exit function if choice is to go back
         }
-        int subjectIndex = 0;
+        int subjectIndex = 0; // Index to specify which subject's grades to sort by
         if (sortChoice == 4)
         {
             cout << "Choose the subject to sort by:" << endl;
@@ -1190,20 +1190,20 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
             cout << "[3] History" << endl;
             cout << "[4] Science" << endl;
             cout << "Enter your choice: ";
-            cin >> subjectIndex;
-            int n = studentCount;
-
-            for (int i = n / 2 - 1; i >= 0; i--)
+            cin >> subjectIndex;// Get subject index for sorting
+            int n = studentCount;// Total number of students
+            
+            for (int i = n / 2 - 1; i >= 0; i--)// Build heap (rearrange array)
             {
-                heapify(students, n, i, sortChoice, subjectIndex);
+                heapify(students, n, i, sortChoice, subjectIndex);// Heapify each subtree
             }
 
-            for (int i = n - 1; i > 0; i--)
+            for (int i = n - 1; i > 0; i--)// Extract elements one by one from heap
             {
-                swap(students[0], students[i]);
-                heapify(students, i, 0, sortChoice, subjectIndex);
+                swap(students[0], students[i]);// Move current root to end
+                heapify(students, i, 0, sortChoice, subjectIndex);// Call heapify on reduced heap
             }
-
+            // Print sorted result
             cout << "==============================================================================================" << endl;
             cout << "                                SORTED RESULT" << endl;
             cout << "==============================================================================================" << endl;
@@ -1211,25 +1211,27 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
             cout << "----------------------------------------------------------------------------------------------" << endl;
 
             string subjects[5] = {"Bahasa Melayu", "English", "Mathematics", "History", "Science"};
-            int no = 1;
+            int no = 1;// Counter for student number in output
 
             for (int i = 0; i < n; ++i)
             {
-                const StudentInfo &student = students[i];
+                const StudentInfo &student = students[i];// Reference to current student
                 cout << "| " << setw(3) << left << no++ << " | " << setw(15) << left << student.studentId << " | " << setw(18) << left << student.studentName << " | " << setw(8) << left << student.className << " | " << setw(15) << left << subjects[subjectIndex] << " | ";
                 if (student.grades[subjectIndex] < 40.0f)
                 {
+                    // Print student details for the first subject
                     cout << "\033[1;31m" << setw(8) << left << student.grades[subjectIndex];
                 }
                 else
                 {
+                    // Print only the subject and grade for subsequent subjects
                     cout << "\033[1;32m" << setw(8) << left << student.grades[subjectIndex];
                 }
                 cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[subjectIndex]) << " |" << endl;
             }
 
             cout << "==============================================================================================" << endl;
-            system("pause");
+            system("pause"); // Pause the system to view results
             return;
         }
 
@@ -1271,21 +1273,21 @@ void searchBySubject(StudentInfo *students, int studentCount, const string &subj
 
                 if (student.grades[j] < 40.0f)
                 {
-                    cout << "\033[1;31m" << setw(8) << left << student.grades[j];
+                    cout << "\033[1;31m" << setw(8) << left << student.grades[j]; // Red color for marks < 40
                 }
                 else
                 {
-                    cout << "\033[1;32m" << setw(8) << left << student.grades[j];
+                    cout << "\033[1;32m" << setw(8) << left << student.grades[j];// Green color for marks >= 40
                 }
-                cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[j]) << " |" << endl;
+                cout << "\033[0m" << " | " << setw(6) << left << getGradeLetter(student.grades[j]) << " |" << endl;// Print grade
             }
             if (i != n - 1)
             {
                 cout << "----------------------------------------------------------------------------------------------" << endl;
             }
         }
-        cout << "==============================================================================================" << endl;
-        system("pause");
+        cout << "==============================================================================================" << endl;// Separator between students
+        system("pause");// Pause the system to view results
     }
 
     void assignmentMenu()
