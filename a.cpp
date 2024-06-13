@@ -568,7 +568,7 @@ void open_menu()
                     }
                 }
             }
-
+//hih
             cout << "    Enter the new mark : ";
             float newGrade;
             cin >> newGrade;
