@@ -1347,8 +1347,8 @@ public:
         cout << "    Teacher's Comments : " << endl;
         it->comments.printComments();
         cout << "-----------------------------------------------------------------------------------------" << endl;
-        cout << "    Awards : " << endl; // 添加奖项标题
-        it->awards.printAwards(); // 打印奖项
+        cout << "    Awards : " << endl;
+        it->awards.printAwards(); 
         cout << "-----------------------------------------------------------------------------------------" << endl;
         system("pause");
         system("cls");
