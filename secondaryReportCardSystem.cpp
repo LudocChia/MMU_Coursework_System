@@ -43,7 +43,7 @@ public:
     virtual ~Identity() {}
 };
 
-// 老师类
+// Teacher
 class Teacher : public Identity {
     friend class Student;
 
