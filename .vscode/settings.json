@@ -7,6 +7,9 @@
                 "ios": "cpp",
                 "iomanip": "cpp",
                 "string": "cpp",
-                "string_view": "cpp"
+                "string_view": "cpp",
+                "xstring": "cpp",
+                "fstream": "cpp",
+                "limits": "cpp"
         }
 }
