@@ -1564,8 +1564,9 @@ public:
             cout << "    [4] View Teacher or Student List" << endl;
             cout << "    [5] View All Classes List" << endl;
             cout << "    [6] Add Subject" << endl;
-            cout << "    [7] View Subjects" << endl;
-            cout << "    [8] Logout" << endl;
+            cout << "    [7] Delete Subject" << endl;
+            cout << "    [8] View Subjects" << endl;
+            cout << "    [9] Logout" << endl;
             cout << "============================================================================" << endl;
         RECHOICE:
             cout << "    Please Enter Your Choice: ";
@@ -1606,9 +1607,13 @@ public:
                 break;
             case 7:
                 system("cls");
-                view_subjects();
+                delete_subject();
                 break;
             case 8:
+                system("cls");
+                view_subjects();
+                break;
+            case 9:
                 saveSubjects("subjects.txt");
                 return;
             default:
@@ -2304,7 +2309,6 @@ private:
             switch (choice)
             {
             case 1:
-                // Sorting functionality can be implemented here
                 break;
             case 2:
                 search_classes_or_teachers(classes);
@@ -2457,7 +2461,6 @@ private:
             saveSubjects("subjects.txt");
             cout << "\033[1;32m    Subject Added Successfully.\033[0m" << endl;
 
-            // 更新gradeAttendance.txt文件
             reinitialize_grades_for_classes(classes);
         }
         else
@@ -2467,6 +2470,121 @@ private:
 
         system("pause");
         system("cls");
+    }
+
+    void delete_subject()
+    {
+        string subjectCode;
+        cout << "============================================================================" << endl;
+        cout << "                                DELETE SUBJECT                              " << endl;
+        cout << "============================================================================" << endl;
+        cout << "    Enter Subject Code to Delete: ";
+        cin >> subjectCode;
+
+        SubjectNode *current = subjects.head;
+        SubjectNode *prev = nullptr;
+        bool found = false;
+
+        while (current != nullptr)
+        {
+            if (current->subjectCode == subjectCode)
+            {
+                found = true;
+                if (prev == nullptr)
+                {
+                    subjects.head = current->next;
+                }
+                else
+                {
+                    prev->next = current->next;
+                }
+                delete current;
+                cout << "\033[1;32m    Subject Deleted Successfully.\033[0m" << endl;
+                break;
+            }
+            prev = current;
+            current = current->next;
+        }
+
+        if (!found)
+        {
+            cout << "\033[1;31m    Subject Code Not Found. Please Try Again.\033[0m" << endl;
+        }
+        else
+        {
+            saveSubjects("subjects.txt");
+            reinitialize_grades_after_deletion(subjectCode);
+        }
+
+        system("pause");
+        system("cls");
+    }
+
+    void reinitialize_grades_after_deletion(const string &deletedSubjectCode)
+    {
+        ifstream inFile("gradeAttendance.txt");
+        if (!inFile.is_open())
+        {
+            cout << "Unable to open gradeAttendance.txt for reading" << endl;
+            return;
+        }
+
+        vector<string> lines;
+        string line;
+        vector<string> subjectCodes;
+
+        SubjectNode *current = subjects.head;
+        while (current != nullptr)
+        {
+            subjectCodes.push_back(current->subjectCode);
+            current = current->next;
+        }
+
+        while (getline(inFile, line))
+        {
+            stringstream ss(line);
+            string studentId, studentClass;
+            getline(ss, studentId, '|');
+            getline(ss, studentClass, '|');
+
+            vector<string> grades;
+            string grade;
+            while (getline(ss, grade, '|'))
+            {
+                grades.push_back(grade);
+            }
+
+            stringstream newLine;
+            newLine << studentId << "|" << studentClass;
+
+            size_t gradeIndex = 0;
+            for (size_t i = 0; i < subjectCodes.size(); ++i)
+            {
+                if (subjectCodes[i] == deletedSubjectCode)
+                {
+                    gradeIndex += 3;
+                    continue;
+                }
+                newLine << "|" << grades[gradeIndex] << "|" << grades[gradeIndex + 1] << "|" << grades[gradeIndex + 2];
+                gradeIndex += 3;
+            }
+            newLine << "|" << grades.back();
+            lines.push_back(newLine.str());
+        }
+        inFile.close();
+
+        ofstream outFile("gradeAttendance.txt");
+        if (!outFile.is_open())
+        {
+            cout << "Unable to open gradeAttendance.txt for writing" << endl;
+            return;
+        }
+
+        for (const auto &l : lines)
+        {
+            outFile << l << "\n";
+        }
+        outFile.close();
     }
 
     void reinitialize_grades_for_classes(const vector<string> &classes)
@@ -2493,7 +2611,6 @@ private:
 
             if (find(classes.begin(), classes.end(), studentClass) != classes.end())
             {
-                // Get the number of subjects for the class
                 SubjectNode *current = subjects.head;
                 while (current != nullptr)
                 {
@@ -2504,16 +2621,14 @@ private:
                     current = current->next;
                 }
 
-                // Initialize all grades to -1 based on the number of subjects
                 for (int i = 0; i < subjectCount * 3; ++i)
                 {
-                    grades.push_back(-1.0f); // 3 terms for each subject
+                    grades.push_back(-1.0f);
                 }
 
-                // Read the attendance percentage
                 float attendance;
                 ss >> attendance;
-                grades.push_back(attendance); // Add attendance percentage to the end of the grades vector
+                grades.push_back(attendance);
             }
             else
             {
