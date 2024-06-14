@@ -1293,8 +1293,8 @@ private:
             cout << "    What profile type would you like to edit?" << endl;
             cout << "    [1] Edit User Name" << endl;
             cout << "    [2] Reset User Password" << endl;
-            cout << "    [3] Change User Gender" << endl;
-            cout << "    [4] Change User Class" << endl;
+            cout << "    [3] Edit User Gender" << endl;
+            cout << "    [4] Edit User Class" << endl;
             cout << "    [5] Cancel" << endl;
             cout << "============================================================================" << endl;
 
