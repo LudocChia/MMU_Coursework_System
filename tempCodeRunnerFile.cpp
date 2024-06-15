@@ -1,1 +1,1 @@
-update_student_grades
+    // Calculate and display term percentage

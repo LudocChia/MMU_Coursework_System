@@ -2,6 +2,6 @@
 1249|History|5A|5B|5C|5D
 1103|Malay|5A|5B|5C|5D
 1449|Mathematics|5A|5B|5C|5D
-1119|English|5A|5B|5C|5D
-4541|Chemistry|5A|5B
-4551|Biology|5A|5B
+1119|English|5A|5B|5C|5D|3D
+4541|Chemistry|5A|5B|3D
+4551|Biology|5A|5B|3D
