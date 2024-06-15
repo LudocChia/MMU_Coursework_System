@@ -1,7 +1,1 @@
-
-                {
-                    return true;
-                }
-            }
-        }
-        else if (type == 2)
+SubjectLinkedList subjects;
