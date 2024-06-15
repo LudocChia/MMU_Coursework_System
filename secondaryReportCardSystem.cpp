@@ -1454,10 +1454,8 @@ void view_report_card() {
         return;
     }
 
-    // Load all comments for the student
     vector<string> comments = loadStudentComments_All(this->m_id);
 
-   // Load awards for the student
     vector<string> awards = loadStudentAwards_New(this->m_id);
 
     string terms[] = {"First Term Exam", "Midterm Exam", "Final Exam"};
@@ -1546,7 +1544,6 @@ void view_report_card() {
     system("cls");
 }
 
-// Implement the function to load subjects
 void loadSubjectsForClass_New(const string &className, vector<pair<string, string>> &subjectsForClass) {
     ifstream subjectsFile("subjects.txt");
     string line;
@@ -1564,7 +1561,6 @@ void loadSubjectsForClass_New(const string &className, vector<pair<string, strin
     }
 }
 
-// Implement the function to load grades
 bool loadGradesForStudent_New(const string &studentId, vector<float> &grades, float &attendance) {
     ifstream gradesFile("gradeAttendance.txt");
     string line;
@@ -1588,7 +1584,6 @@ bool loadGradesForStudent_New(const string &studentId, vector<float> &grades, fl
     return false;
 }
 
-// Function to get the grade letter
 string getGradeLetter_New(float grade) {
         if (grade == -1)
             return "-";
@@ -2013,7 +2008,6 @@ void activate_new_account() {
                 cout << "\033[1;32m    User Added Successfully. Returning to Rechoice\033[0m" << endl;
 
                 if (user_type == 2) {
-                    // Add dynamic grades for the student
                     ofstream gradeFile("gradeAttendance.txt", ios::out | ios::app);
                     if (gradeFile.is_open()) {
                         vector<string> subjectCodes;
@@ -2037,13 +2031,12 @@ void activate_new_account() {
                         for (size_t i = 0; i < subjectCodes.size() * 3; ++i) {
                             gradeFile << "|-1";
                         }
-                        gradeFile << "|0" << endl; // Attendance is always at the end
+                        gradeFile << "|0" << endl; // attendance 在最后的
                         gradeFile.close();
                     } else {
                         cout << "Unable to open gradeAttendance.txt for writing" << endl;
                     }
 
-                    // Add default comment entry
                     ofstream commentFile("comment.txt", ios::out | ios::app);
                     if (commentFile.is_open()) {
                         commentFile << user_id << "|" << user_class << "|" << endl;
@@ -2051,8 +2044,7 @@ void activate_new_account() {
                     } else {
                         cout << "Unable to open comment.txt for writing" << endl;
                     }
-
-                    // Add entry to awards file
+                    
                     ofstream awardsFile("awards.txt", ios::out | ios::app);
                     if (awardsFile.is_open()) {
                         awardsFile << user_id << "|" << endl;
