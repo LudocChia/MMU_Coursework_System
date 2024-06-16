@@ -1,1 +1,1 @@
-//
+    // Calculate and display term percentage

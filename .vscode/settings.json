@@ -10,6 +10,8 @@
                 "string_view": "cpp",
                 "xstring": "cpp",
                 "fstream": "cpp",
-                "limits": "cpp"
+                "limits": "cpp",
+                "xutility": "cpp",
+                "xiosbase": "cpp"
         }
 }
