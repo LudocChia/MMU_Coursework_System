@@ -8,6 +8,7 @@
 #include <vector>
 #include <limits>
 #include <algorithm>
+#include <unordered_map>
 
 using namespace std;
 
@@ -288,18 +289,15 @@ public:
         this->m_class = user_class;
     }
 
-    static void loadStudentGradeAttendance(const string &filename, vector<StudentInfo> &students, const SubjectLinkedList &subjects)
-    {
+    void loadStudentGradeAttendance(const string& filename, vector<StudentInfo>& students, SubjectLinkedList& subjects) {
         ifstream file(filename);
-        if (!file.is_open())
-        {
+        if (!file.is_open()) {
             cout << "Failed to open " << filename << endl;
             return;
         }
 
         string line;
-        while (getline(file, line))
-        {
+        while (getline(file, line)) {
             stringstream ss(line);
             StudentInfo student;
             string gradeStr;
@@ -307,58 +305,58 @@ public:
             getline(ss, student.studentId, '|');
             getline(ss, student.studentClass, '|');
 
-            SubjectNode *subjectNode = subjects.head;
-            while (subjectNode != nullptr)
-            {
-                if (find(subjectNode->subjectClasses.begin(), subjectNode->subjectClasses.end(), student.studentClass) != subjectNode->subjectClasses.end())
-                {
-                    for (int i = 0; i < 3; ++i) // 3 terms (First Term, Midterm, Final)
-                    {
-                        getline(ss, gradeStr, '|');
+            // Load the subjects for the student's class
+            vector<pair<string, string>> subjectsForClass;
+            loadSubjectsForClass(student.studentClass, subjectsForClass);
+
+            // Read the grades for each subject and term
+            student.grades.clear();
+            for (size_t i = 0; i < subjectsForClass.size() * 3; ++i) { // 3 terms (First Term, Midterm, Final)
+                if (getline(ss, gradeStr, '|')) {
+                    if (gradeStr == "-1") {
+                        student.grades.push_back(-1.0f);
+                    } else {
                         student.grades.push_back(stof(gradeStr));
                     }
                 }
-                subjectNode = subjectNode->next;
             }
 
-            getline(ss, gradeStr);
-            student.attendancePercentage = stof(gradeStr);
+            // Read the attendance percentage
+            if (getline(ss, gradeStr, '|')) {
+                student.attendancePercentage = stof(gradeStr);
+            }
 
             students.push_back(student);
         }
 
         file.close();
+
     }
 
-    static void saveStudentGradeAttendance(const vector<StudentInfo> &students, const string &filename, const SubjectLinkedList &subjects)
-    {
-        ofstream file(filename);
+    void saveStudentGradeAttendance(const vector<StudentInfo>& students, const string& filename, const SubjectLinkedList& subjects) {
+    ofstream file(filename);
 
-        for (const auto &student : students)
-        {
-            file << student.studentId << "|" << student.studentClass;
-            SubjectNode *subjectNode = subjects.head;
-            size_t gradeIndex = 0;
+    for (const auto& student : students) {
+        file << student.studentId << "|" << student.studentClass;
+        vector<pair<string, string>> subjectsForClass;
+        loadSubjectsForClass(student.studentClass, subjectsForClass);
+        size_t gradeIndex = 0;
 
-            while (subjectNode != nullptr)
-            {
-                if (find(subjectNode->subjectClasses.begin(), subjectNode->subjectClasses.end(), student.studentClass) != subjectNode->subjectClasses.end())
-                {
-                    for (int i = 0; i < 3; ++i) // 3 terms (First Term, Midterm, Final)
-                    {
-                        file << "|" << student.grades[gradeIndex++];
-                    }
-                }
-                subjectNode = subjectNode->next;
+        // Write the grades for each subject and term
+        for (size_t i = 0; i < subjectsForClass.size() * 3; ++i) { // 3 terms (First Term, Midterm, Final)
+            if (gradeIndex < student.grades.size()) {
+                file << "|" << student.grades[gradeIndex++];
+            } else {
+                file << "|-1"; // if there are no grades, use -1 as placeholder
             }
-
-            file << "|" << student.attendancePercentage << "\n";
         }
 
-        file.close();
+        file << "|" << student.attendancePercentage << "\n";
     }
 
+    file.close();
 
+}
 
 void saveStudentComments(const vector<StudentInfo> &students, const string &filename) {
     ofstream file(filename);
@@ -373,8 +371,6 @@ void saveStudentComments(const vector<StudentInfo> &students, const string &file
 
     file.close();
 }
-
-
 
 
 
@@ -539,176 +535,190 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
         return;
     }
 
-    void update_student_grades()
+    void loadSubjectsForClass(const string& className, vector<pair<string, string>>& subjectsForClass) {
+    ifstream subjectsFile("subjects.txt");
+    string line;
+    while (getline(subjectsFile, line)) {
+        stringstream ss(line);
+        string subjectCode, subjectName, classList;
+        getline(ss, subjectCode, '|');
+        getline(ss, subjectName, '|');
+        while (getline(ss, classList, '|')) {
+            if (classList == className) {
+                subjectsForClass.push_back({subjectCode, subjectName});
+                break;
+            }
+        }
+    }
+}
+    
+    void convertSubjectsForClassToLinkedList(const vector<pair<string, string>>& subjectsForClass, SubjectLinkedList& subjectsLinkedList) {
+    subjectsLinkedList.head = nullptr;
+    SubjectNode* current = nullptr;
+
+    for (const auto& subject : subjectsForClass) {
+        SubjectNode* newNode = new SubjectNode(subject.first, subject.second, vector<string>());
+        newNode->next = nullptr;
+
+        if (subjectsLinkedList.head == nullptr) {
+            subjectsLinkedList.head = newNode;
+        } else {
+            current->next = newNode;
+        }
+
+        current = newNode;
+    }
+}
+
+    void loadUsers(const string& filename, vector<Teacher>& teachers) {
+            ifstream file(filename);
+            string line, userType, id, name, password, gender, classId;
+            while (getline(file, line)) {
+                stringstream ss(line);
+                getline(ss, userType, '|');
+                getline(ss, id, '|');
+                getline(ss, name, '|');
+                getline(ss, password, '|');
+                getline(ss, gender, '|');
+                getline(ss, classId, '|');
+                if (userType == "1") {  // Teacher
+                    teachers.emplace_back(userType, id, name, password, gender, classId);
+                }
+            }
+            file.close();
+        }
+
+
+    void update_student_grades() 
     {
+        
         vector<StudentInfo> students;
         SubjectLinkedList subjects;
         Teacher::loadStudentGradeAttendance("gradeAttendance.txt", students, subjects);
-
-        cout << "============================================================================" << endl;
-        cout << "                            UPDATE STUDENT MARKS" << endl;
-        cout << "============================================================================" << endl;
-        cout << "    Enter the student ID : ";
-
+            
         string studentId;
-        cin >> studentId;
+        bool studentFound = false;
 
-        auto it = find_if(students.begin(), students.end(), [&](const StudentInfo &s)
-                          { return s.studentId == studentId; });
-        if (it == students.end())
-        {
-            char choice;
-            cout << "\033[1;31m    Student not found. Please try again. \033[0m" << endl;
-            cout << "    Do you want to try again ? (Y/N) : ";
-            cin >> choice;
-
-            while (choice == 'y' || choice == 'Y')
-            {
-                cout << "============================================================================" << endl;
-                cout << "    Enter the correct student ID : ";
-                cin >> studentId;
-                it = find_if(students.begin(), students.end(), [&](const StudentInfo &s)
-                             { return s.studentId == studentId; });
-
-                if (it == students.end())
-                {
-                    cout << "\033[1;31m    Student not found. Please try again. \033[0m" << endl;
-                    cout << "    Do you want to try again ? (Y/N) : ";
-                    cin >> choice;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            if (choice != 'y' && choice != 'Y')
-            {
-                system("cls");
-                return;
-            }
-        }
-
+        while (!studentFound) {
         system("cls");
         cout << "============================================================================" << endl;
         cout << "                            UPDATE STUDENT MARKS" << endl;
         cout << "============================================================================" << endl;
-        cout << "    Select the term to update marks" << endl;
-        cout << "    [1] First Term Exam" << endl;
-        cout << "    [2] Midterm Exam" << endl;
-        cout << "    [3] Final Exam" << endl;
-        cout << "    [4] Back to Main Menu" << endl;
-        cout << "----------------------------------------------------------------------------" << endl;
-        cout << "    Enter your choice: ";
-        int termChoice;
-        cin >> termChoice;
+        cout << "Enter the student ID to update: ";
+        string studentId;
+        cin >> studentId;
 
-        int gradeOffset;
-        switch (termChoice)
-        {
-        case 1:
-            gradeOffset = 0;
-            break;
-        case 2:
-            gradeOffset = 7;
-            break;
-        case 3:
-            gradeOffset = 14;
-            break;
-        case 4:
-            return;
-        default:
-            while (termChoice < 1 || termChoice > 4)
-            {
-                cout << "\033[1;31m    Invalid choice. Please enter a number between 1 and 4. \033[0m" << endl;
+        auto studentIt = find_if(students.begin(), students.end(), [&](const StudentInfo& s) { return s.studentId == studentId && s.studentClass == this->m_class; });
+        if (studentIt == students.end()) {
+            cout << "\033[1;31mStudent not found or not in your class. Please try again.\033[0m\n";
+            char tryAgain;
+            cout << "Do you want to try again? (Y/N): ";
+            cin >> tryAgain;
+            if (tryAgain != 'y' && tryAgain != 'Y') {
+                return;
+            }
+        } else {
+            studentFound = true;
+
+            vector<pair<string, string>> subjectsForClass;
+            loadSubjectsForClass(this->m_class, subjectsForClass);
+
+            bool continueUpdating = true;
+            while (continueUpdating) {
+                system("cls");
+                cout << "============================================================================" << endl;
+                cout << "                            UPDATE STUDENT MARKS" << endl;
+                cout << "============================================================================" << endl;
+                cout << "Select the term to update marks\n";
+                cout << "[1] First Term Exam\n";
+                cout << "[2] Midterm Exam\n";
+                cout << "[3] Final Exam\n";
+                cout << "[4] Back to Main Menu\n";
                 cout << "----------------------------------------------------------------------------" << endl;
-                cout << "    Enter your choice: ";
+                cout << "Enter your choice: ";
+                int termChoice;
                 cin >> termChoice;
 
-                if (termChoice == 1)
-                {
+                int gradeOffset;
+                switch (termChoice) {
+                case 1:
                     gradeOffset = 0;
-                }
-                else if (termChoice == 2)
-                {
-                    gradeOffset = 7;
-                }
-                else if (termChoice == 3)
-                {
-                    gradeOffset = 14;
-                }
-                else if (termChoice == 4)
-                {
+                    break;
+                case 2:
+                    gradeOffset = subjectsForClass.size();
+                    break;
+                case 3:
+                    gradeOffset = 2 * subjectsForClass.size();
+                    break;
+                case 4:
                     return;
+                default:
+                    cout << "\033[1;31mInvalid choice. Please enter a number between 1 and 4.\033[0m\n";
+                    return;
+                }
+
+                StudentInfo& student = *studentIt;
+                system("cls");
+                cout << "============================================================================" << endl;
+                cout << "                            UPDATE STUDENT MARKS" << endl;
+                cout << "============================================================================" << endl;
+                cout << "Current grades for " << studentId << ":\n";
+                for (size_t i = 0; i < subjectsForClass.size(); ++i) {
+                    int index = gradeOffset + i;
+                    cout << "[" << (i + 1) << "] " << subjectsForClass[i].second << ": ";
+                    if (index < student.grades.size()) {
+                        if (student.grades[index] == -1.0f) {
+                            cout << "-\n";
+                        } else {
+                            cout << student.grades[index] << "\n";
+                        }
+                    } else {
+                        cout << "N/A\n";
+                    }
+                }
+
+                cout << "----------------------------------------------------------------------------" << endl;
+                cout << "Select the subject code to update the marks (1-" << subjectsForClass.size() << ") : ";
+                int subjectChoice;
+                cin >> subjectChoice;
+
+                while (cin.fail() || subjectChoice < 1 || subjectChoice > static_cast<int>(subjectsForClass.size())) {
+                    cout << "\033[1;31mInvalid subject choice. Please enter a number between 1 and " << subjectsForClass.size() << ".\033[0m\n";
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Select the correct subject code to update the marks (1-" << subjectsForClass.size() << ") : ";
+                    cin >> subjectChoice;
+                }
+
+                cout << "Enter the new mark: ";
+                float newGrade;
+                cin >> newGrade;
+
+                while (cin.fail() || newGrade < 0 || newGrade > 100) {
+                    cout << "\033[1;31mInvalid marks. Please enter a valid number between 0 and 100.\033[0m\n";
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Enter the correct marks: ";
+                    cin >> newGrade;
+                }
+
+                student.grades[gradeOffset + subjectChoice - 1] = newGrade;
+
+                SubjectLinkedList subjectsLinkedList;
+                convertSubjectsForClassToLinkedList(subjectsForClass, subjectsLinkedList);
+                saveStudentGradeAttendance(students, "gradeAttendance.txt", subjectsLinkedList);
+                cout << "\033[1;32mMarks updated successfully!\033[0m\n";
+
+                char updateAnother;
+                cout << "Do you want to update another subject mark for this student? (Y/N): ";
+                cin >> updateAnother;
+                if (updateAnother != 'y' && updateAnother != 'Y') {
+                    continueUpdating = false;
                 }
             }
         }
-
-        char continueUpdate;
-        do
-        {
-            system("cls");
-            cout << "============================================================================" << endl;
-            cout << "                            UPDATE STUDENT MARKS" << endl;
-            cout << "============================================================================" << endl;
-            cout << "    Current grades for " << studentId << endl;
-            vector<string> subjectNames;
-            SubjectNode *current = subjects.head;
-            while (current != nullptr)
-            {
-                subjectNames.push_back(current->subjectName);
-                current = current->next;
-            }
-
-            for (size_t i = 0; i < subjectNames.size(); ++i)
-            {
-                cout << "    [" << i + 1 << "] " << subjectNames[i] << endl;
-            }
-
-            cout << "----------------------------------------------------------------------------" << endl;
-            cout << "    Select the subject code to update the marks (1-" << subjectNames.size() << ") : ";
-            int subjectChoice;
-            cin >> subjectChoice;
-
-            while (cin.fail() || subjectChoice < 1 || subjectChoice > static_cast<int>(subjectNames.size()))
-            {
-                cout << "\033[1;31m    Invalid subject choice. Please enter a number between 1 and " << subjectNames.size() << ". \033[0m" << endl;
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "    Select the correct subject code to update the marks (1-" << subjectNames.size() << ") : ";
-                cin >> subjectChoice;
-            }
-
-            cout << "    Enter the new mark : ";
-            float newGrade;
-            cin >> newGrade;
-
-            while (cin.fail() || newGrade < 0 || newGrade > 100)
-            {
-                cout << "\033[1;31m    Invalid marks. Please enter a valid number between 0 and 100.\033[0m" << endl;
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "    Enter the correct marks: ";
-                cin >> newGrade;
-            }
-
-            it->grades[gradeOffset + subjectChoice - 1] = newGrade;
-
-            saveStudentGradeAttendance(students, "gradeAttendance.txt", subjects);
-            cout << "\033[1;32m    Marks updated successfully! \033[0m" << endl;
-
-            cout << "    Do you want to update another subject? (Y/N): ";
-            cin >> continueUpdate;
-
-            while (cin.fail() || (continueUpdate != 'y' && continueUpdate != 'Y' && continueUpdate != 'n' && continueUpdate != 'N'))
-            {
-                cout << "\033[1;31m    Invalid choice. Please enter Y or N.\033[0m" << endl;
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "    Enter your choice: ";
-                cin >> continueUpdate;
-            }
-        } while (continueUpdate == 'y' || continueUpdate == 'Y');
     }
+    }//end of student grade
 
     void update_student_attendance()
     {
