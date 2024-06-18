@@ -13,6 +13,7 @@
                 "limits": "cpp",
                 "xutility": "cpp",
                 "xiosbase": "cpp",
-                "unordered_map": "cpp"
+                "unordered_map": "cpp",
+                "numbers": "cpp"
         }
 }
