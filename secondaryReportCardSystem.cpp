@@ -9,7 +9,6 @@
 #include <limits>
 #include <algorithm>
 #include <unordered_map>
-#include <map>
 
 using namespace std;
 
@@ -228,7 +227,6 @@ struct SubjectLinkedList
 struct StudentInfo
 {
     string studentId;
-    string studentName;
     string studentClass;
     CommentLinkedList comments;
     AwardLinkedList awards;
@@ -266,7 +264,6 @@ public:
     }
 };
 
-
 class Teacher : public Identity
 {
     friend class Student;
@@ -291,8 +288,6 @@ public:
         this->m_gender = user_gender;
         this->m_class = user_class;
     }
-
-    vector<float> getTermMarks(const StudentInfo& student, int term, int subjectsCount) const;
 
     void loadStudentGradeAttendance(const string& filename, vector<StudentInfo>& students, SubjectLinkedList& subjects) {
         ifstream file(filename);
@@ -339,113 +334,113 @@ public:
     }
 
     void saveStudentGradeAttendance(const vector<StudentInfo>& students, const string& filename, const SubjectLinkedList& subjects) {
-        ofstream file(filename);
+    ofstream file(filename);
 
-        for (const auto& student : students) {
-            file << student.studentId << "|" << student.studentClass;
-            vector<pair<string, string>> subjectsForClass;
-            loadSubjectsForClass(student.studentClass, subjectsForClass);
-            size_t gradeIndex = 0;
+    for (const auto& student : students) {
+        file << student.studentId << "|" << student.studentClass;
+        vector<pair<string, string>> subjectsForClass;
+        loadSubjectsForClass(student.studentClass, subjectsForClass);
+        size_t gradeIndex = 0;
 
-            // Write the grades for each subject and term
-            for (size_t i = 0; i < subjectsForClass.size() * 3; ++i) { // 3 terms (First Term, Midterm, Final)
-                if (gradeIndex < student.grades.size()) {
-                    file << "|" << student.grades[gradeIndex++];
-                } else {
-                    file << "|-1"; // if there are no grades, use -1 as placeholder
-                }
-            }
-
-            file << "|" << student.attendancePercentage << "\n";
-        }
-
-        file.close();
-
-    }
-
-    void saveStudentComments(const vector<StudentInfo> &students, const string &filename) {
-        ofstream file(filename);
-
-        for (const auto &student : students) {
-            CommentNode *current = student.comments.head;
-            while (current != nullptr) {
-                file << student.studentId << "|" << student.studentClass << "|" << current->comment << "\n";
-                current = current->next;
+        // Write the grades for each subject and term
+        for (size_t i = 0; i < subjectsForClass.size() * 3; ++i) { // 3 terms (First Term, Midterm, Final)
+            if (gradeIndex < student.grades.size()) {
+                file << "|" << student.grades[gradeIndex++];
+            } else {
+                file << "|-1"; // if there are no grades, use -1 as placeholder
             }
         }
 
-        file.close();
+        file << "|" << student.attendancePercentage << "\n";
     }
 
+    file.close();
 
+}
 
-    void loadStudentComments(const string &filename, vector<StudentInfo> &students) {
-        ifstream file(filename);
-        string line;
+void saveStudentComments(const vector<StudentInfo> &students, const string &filename) {
+    ofstream file(filename);
 
-        if (!file.is_open()) {
-            cout << "Failed to open " << filename << endl;
-            return;
+    for (const auto &student : students) {
+        CommentNode *current = student.comments.head;
+        while (current != nullptr) {
+            file << student.studentId << "|" << student.studentClass << "|" << current->comment << "\n";
+            current = current->next;
         }
-
-        while (getline(file, line)) {
-            stringstream ss(line);
-            string studentId, studentClass, comment;
-
-            getline(ss, studentId, '|');
-            getline(ss, studentClass, '|');
-            getline(ss, comment, '|');
-
-            auto it = find_if(students.begin(), students.end(), [&](const StudentInfo &s) {
-                return s.studentId == studentId;
-            });
-
-            if (it != students.end()) {
-                it->comments.addComment(comment);
-            }
-        }
-        file.close();
     }
 
-    void loadStudentAwards(const string &filename, vector<StudentInfo> &students) {
-        ifstream file(filename);
-        if (!file.is_open()) {
-            cout << "Failed to open " << filename << endl;
-            return;
-        }
+    file.close();
+}
 
-        string line;
-        while (getline(file, line)) {
-            stringstream ss(line);
-            string studentId, award;
 
-            getline(ss, studentId, '|');
-            getline(ss, award, '|');
 
-            auto it = find_if(students.begin(), students.end(), [&](const StudentInfo &s) {
-                return s.studentId == studentId;
-            });
+void loadStudentComments(const string &filename, vector<StudentInfo> &students) {
+    ifstream file(filename);
+    string line;
 
-            if (it != students.end()) {
-                it->awards.addAward(award);
-            }
-        }
-        file.close();
+    if (!file.is_open()) {
+        cout << "Failed to open " << filename << endl;
+        return;
     }
 
-    void saveStudentAwards(const vector<StudentInfo> &students, const string &filename) {
-        ofstream file(filename);
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string studentId, studentClass, comment;
 
-        for (const auto &student : students) {
-            AwardNode *current = student.awards.head;
-            while (current != nullptr) {
-                file << student.studentId << "|" << current->award << "\n";
-                current = current->next;
-            }
+        getline(ss, studentId, '|');
+        getline(ss, studentClass, '|');
+        getline(ss, comment, '|');
+
+        auto it = find_if(students.begin(), students.end(), [&](const StudentInfo &s) {
+            return s.studentId == studentId;
+        });
+
+        if (it != students.end()) {
+            it->comments.addComment(comment);
         }
-
-        file.close();
     }
+    file.close();
+}
+
+void loadStudentAwards(const string &filename, vector<StudentInfo> &students) {
+    ifstream file(filename);
+    if (!file.is_open()) {
+        cout << "Failed to open " << filename << endl;
+        return;
+    }
+
+    string line;
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string studentId, award;
+
+        getline(ss, studentId, '|');
+        getline(ss, award, '|');
+
+        auto it = find_if(students.begin(), students.end(), [&](const StudentInfo &s) {
+            return s.studentId == studentId;
+        });
+
+        if (it != students.end()) {
+            it->awards.addAward(award);
+        }
+    }
+    file.close();
+}
+
+void saveStudentAwards(const vector<StudentInfo> &students, const string &filename) {
+    ofstream file(filename);
+
+    for (const auto &student : students) {
+        AwardNode *current = student.awards.head;
+        while (current != nullptr) {
+            file << student.studentId << "|" << current->award << "\n";
+            current = current->next;
+        }
+    }
+
+    file.close();
+}
 
     string getGradeLetter(float grade)
     {
@@ -541,17 +536,53 @@ public:
     }
 
     void loadSubjectsForClass(const string& className, vector<pair<string, string>>& subjectsForClass) {
-        ifstream subjectsFile("subjects.txt");
-        string line;
-        while (getline(subjectsFile, line)) {
-            stringstream ss(line);
-            string subjectCode, subjectName, classList;
-            getline(ss, subjectCode, '|');
-            getline(ss, subjectName, '|');
-            while (getline(ss, classList, '|')) {
-                if (classList == className) {
-                    subjectsForClass.push_back({subjectCode, subjectName});
-                    break;
+    ifstream subjectsFile("subjects.txt");
+    string line;
+    while (getline(subjectsFile, line)) {
+        stringstream ss(line);
+        string subjectCode, subjectName, classList;
+        getline(ss, subjectCode, '|');
+        getline(ss, subjectName, '|');
+        while (getline(ss, classList, '|')) {
+            if (classList == className) {
+                subjectsForClass.push_back({subjectCode, subjectName});
+                break;
+            }
+        }
+    }
+}
+    
+    void convertSubjectsForClassToLinkedList(const vector<pair<string, string>>& subjectsForClass, SubjectLinkedList& subjectsLinkedList) {
+    subjectsLinkedList.head = nullptr;
+    SubjectNode* current = nullptr;
+
+    for (const auto& subject : subjectsForClass) {
+        SubjectNode* newNode = new SubjectNode(subject.first, subject.second, vector<string>());
+        newNode->next = nullptr;
+
+        if (subjectsLinkedList.head == nullptr) {
+            subjectsLinkedList.head = newNode;
+        } else {
+            current->next = newNode;
+        }
+
+        current = newNode;
+    }
+}
+
+    void loadUsers(const string& filename, vector<Teacher>& teachers) {
+            ifstream file(filename);
+            string line, userType, id, name, password, gender, classId;
+            while (getline(file, line)) {
+                stringstream ss(line);
+                getline(ss, userType, '|');
+                getline(ss, id, '|');
+                getline(ss, name, '|');
+                getline(ss, password, '|');
+                getline(ss, gender, '|');
+                getline(ss, classId, '|');
+                if (userType == "1") {  // Teacher
+                    teachers.emplace_back(userType, id, name, password, gender, classId);
                 }
 
                 else if (userType == "2") 
@@ -559,46 +590,8 @@ public:
                     teachers.emplace_back(userType, id, name, password, gender, classId);
                 }
             }
+            file.close();
         }
-    }
-    
-    void convertSubjectsForClassToLinkedList(const vector<pair<string, string>>& subjectsForClass, SubjectLinkedList& subjectsLinkedList) {
-        subjectsLinkedList.head = nullptr;
-        SubjectNode* current = nullptr;
-
-        for (const auto& subject : subjectsForClass) {
-            SubjectNode* newNode = new SubjectNode(subject.first, subject.second, vector<string>());
-            newNode->next = nullptr;
-
-            if (subjectsLinkedList.head == nullptr) {
-                subjectsLinkedList.head = newNode;
-            } else {
-                current->next = newNode;
-            }
-
-            current = newNode;
-        }
-    }
-
-    void loadUsers(const string& filename, vector<Teacher>& teachers, unordered_map<string, string>& studentNames) {
-    ifstream file(filename);
-    string line, userType, id, name, password, gender, classId;
-    while (getline(file, line)) {
-        stringstream ss(line);
-        getline(ss, userType, '|');
-        getline(ss, id, '|');
-        getline(ss, name, '|');
-        getline(ss, password, '|');
-        getline(ss, gender, '|');
-        getline(ss, classId, '|');
-        if (userType == "1") {  // Teacher
-            teachers.emplace_back(userType, id, name, password, gender, classId);
-        } else if (userType == "2") { // Student
-            studentNames[id] = name;
-        }
-    }
-    file.close();
-}
 
 
     void update_student_grades() 
@@ -814,151 +807,66 @@ public:
         }
     }
 
-    void view_class_attendance_and_grades() {
-        vector<StudentInfo> students;
-        SubjectLinkedList subjects;
-        vector<Teacher> teachers;
-        unordered_map<string, string> studentNames;
-
-        loadStudentGradeAttendance("gradeAttendance.txt", students, subjects);
-        loadUsers("user.txt", teachers, studentNames);
-
-        while (true) {
-            system("cls");
-            int termChoice;
-            cout << "============================================================================" << endl;
-            cout << "                       VIEW CLASS MARKS AND ATTENDANCE " << endl;
-            cout << "============================================================================" << endl;
-            cout << "    Select the term to view marks " << endl;
-            cout << "    [1] First Term Exam" << endl;
-            cout << "    [2] Midterm Exam" << endl;
-            cout << "    [3] Final Exam" << endl;
-            cout << "    [4] Back to Main Menu" << endl;
-            cout << "----------------------------------------------------------------------------" << endl;
-            do {
-                cout << "    Enter your choice : ";
-                if (!(cin >> termChoice)) {
-                    cout << "\033[1;31m    Invalid input. Please enter again. \033[0m" << endl;
-                    cin.clear();
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    continue;
-                }
-
-                if (termChoice < 1 || termChoice > 4) {
-                    cout << "\033[1;31m    Invalid choice. Please enter again. \033[0m" << endl;
-                }
-            } while (termChoice < 1 || termChoice > 4);
-
-            if (termChoice == 4) {
-                system("cls");
-                return;
-            }
-
-            vector<pair<string, string>> subjectsForClass;
-            loadSubjectsForClass(this->m_class, subjectsForClass);
-
-            system("cls"); // Clear the screen before displaying the results
-            cout << "===================================================================================================================================" << endl;
-            cout << "                                                    CLASS " << this->m_class << " MARKS AND ATTENDANCE" << endl;
-            cout << "===================================================================================================================================" << endl;
-
-            cout << left << setw(5) << "No." << setw(15) << "Student ID" << setw(25) << "Student Name" << setw(10) << "Class" << setw(15) << "Subject" << setw(15) << "Mark" << setw(10) << "Grade" << endl;
-            cout << "-----------------------------------------------------------------------------------------------------------------------------------" << endl;
-
-            int studentNo = 1;
-            for (const auto& student : students) {
-                if (student.studentClass == this->m_class) {
-                    for (size_t i = 0; i < subjectsForClass.size(); ++i) {
-                        if (i == 0) {
-                            cout << setw(5) << studentNo << setw(15) << student.studentId << setw(25) << studentNames[student.studentId] << setw(10) << student.studentClass;
-                        } else {
-                            cout << setw(5) << "" << setw(15) << "" << setw(25) << "" << setw(10) << "";
-                        }
-                        cout << setw(15) << subjectsForClass[i].second;
-
-                        int gradeIndex = (termChoice - 1) * subjectsForClass.size() + i;
-                        if (student.grades.size() > gradeIndex && student.grades[gradeIndex] == -1) {
-                            cout << setw(15) << "-" << setw(10) << "-";
-                        } else if (student.grades.size() > gradeIndex) {
-                            if (student.grades[gradeIndex] >= 40) {
-                                cout << "\033[1;32m";  // Green color for grades >= 40
-                            } else {
-                                cout << "\033[1;31m";  // Red color for grades < 40
-                            }
-                            cout << setw(15) << student.grades[gradeIndex] << setw(10) << getGradeLetter(student.grades[gradeIndex]);
-                            cout << "\033[0m";  // Reset color
-                        } else {
-                            cout << setw(15) << "-" << setw(10) << "-";
-                        }
-                        cout << endl;
-                    }
-                    cout << "-----------------------------------------------------------------------------------------------------------------------------------" << endl;
-                    studentNo++;
-                }
-            }
-            cout << "-----------------------------------------------------------------------------------------------------------------------------" << endl;
-            system("pause");
-            system("cls"); // Clear the screen after displaying the results
-        }
-    }//end of view class and attendance
-
-
-    void student_attendance_and_grades()
+    void view_class_attendance_and_grades()
     {
         vector<StudentInfo> students;
         SubjectLinkedList subjects;
         loadStudentGradeAttendance("gradeAttendance.txt", students, subjects);
 
-        vector<Teacher> teachers;
-        loadUsers("user.txt", teachers);
-
-        cout << "=======================================================================================================" << endl;
-        cout << "                                       View Grades and Attendance" << endl;
-        cout << "=======================================================================================================" << endl;
-        cout << "List of students in your class (" << this->m_class << "):" << endl;
-        vector<string> studentIdsInClass;
-        for (const auto& teacher : teachers) 
+        string classToView = this->m_class;
+        int termChoice;
+        int gradeOffset;
+        cout << "============================================================================" << endl;
+        cout << "                       VIEW CLASS MARKS AND ATTENDANCE " << endl;
+        cout << "============================================================================" << endl;
+        cout << "    Select the term to view marks " << endl;
+        cout << "    [1] First Term Exam" << endl;
+        cout << "    [2] Midterm Exam" << endl;
+        cout << "    [3] Final Exam" << endl;
+        cout << "    [4] Back to Main Menu" << endl;
+        cout << "----------------------------------------------------------------------------" << endl;
+        do
         {
-            if (teacher.m_type == "2" && teacher.m_class == this->m_class) 
+            cout << "    Enter your choice : ";
+            if (!(cin >> termChoice))
             {
-                cout << "    ID: " << teacher.m_id << " | Name: " << teacher.m_name << endl;
-                studentIdsInClass.push_back(teacher.m_id);
+                cout << "\033[1;31m    Invalid input. Please enter again. \033[0m" << endl;
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                continue;
             }
-        }
-        cout << "=======================================================================================================" << endl;
 
-        string studentId;
-        cout << "    Enter the student ID : ";
-        cin >> studentId;
-
-        auto it = find_if(students.begin(), students.end(), [&](const StudentInfo &s)
-                          { return s.studentId == studentId; });
-        if (it == students.end() || it->studentClass != this->m_class)
-        {
-            do
+            switch (termChoice)
             {
-                cout << "\033[1;31m    Student not found or not in your class. Please make sure you enter the correct student ID. \033[0m" << endl;
-                cout << "=======================================================================================================" << endl;
-                cout << "    Enter the correct student ID : ";
-                cin >> studentId;
-                it = find_if(students.begin(), students.end(), [&](const StudentInfo &s)
-                             { return s.studentId == studentId; });
-            } while (it == students.end() || it->studentClass != this->m_class);
-            system("cls");
-        }
+            case 1:
+                gradeOffset = 0;
+                break;
+            case 2:
+                gradeOffset = 7;
+                break;
+            case 3:
+                gradeOffset = 14;
+                break;
+            case 4:
+                system("pause");
+                system("cls");
+                return;
+            default:
+                cout << "\033[1;31m    Invalid choice. Please enter again. \033[0m" << endl;
+            }
+        } while (termChoice < 1 || termChoice > 3);
 
         system("cls");
-        cout << "============================================================================" << endl;
-        cout << "                       STUDENT MARKS AND ATTENDANCE                         " << endl;
-        cout << "============================================================================" << endl;
-        cout << "    ID   : " << left << setw(30) << it->studentId << "Class  : " << it->studentClass << endl;
+        cout << "=======================================================================================================================================" << endl;
+        cout << "                                                      CLASS " << classToView << " MARKS AND ATTENDANCE" << endl;
+        cout << "=======================================================================================================================================" << endl;
 
         vector<string> subjectCodes;
         vector<string> subjectNames;
         SubjectNode *current = subjects.head;
         while (current != nullptr)
         {
-            if (find(current->subjectClasses.begin(), current->subjectClasses.end(), this->m_class) != current->subjectClasses.end())
+            if (find(current->subjectClasses.begin(), current->subjectClasses.end(), classToView) != current->subjectClasses.end())
             {
                 subjectCodes.push_back(current->subjectCode);
                 subjectNames.push_back(current->subjectName);
@@ -966,60 +874,155 @@ public:
             current = current->next;
         }
 
-        string terms[3] = {"First Term Exam", "Midterm Exam", "Final Exam"};
-        float totalMarks = 0.0f;
-        float totalPossibleMarks = 0.0f;
-
-        for (int term = 0; term < 3; ++term)
+        cout << left << setw(15) << "Student ID";
+        for (const auto &subjectName : subjectNames)
         {
-            cout << "----------------------------------------------------------------------------" << endl;
-            cout << "                       \033[1;34m" << "Marks for " << terms[term] << "\033[0m" << endl;
-            cout << "----------------------------------------------------------------------------" << endl;
-            cout << "    No.  " << left << setw(35) << "Subject" << setw(10) << "Marks" << setw(10) << "Grades " << endl;
-            int gradeOffset = term * subjectCodes.size();
+            cout << setw(15) << subjectName;
+        }
+        cout << setw(15) << "Attendance";
+        cout << endl;
 
-            for (size_t i = 0; i < subjectCodes.size(); ++i)
+        for (const auto &student : students)
+        {
+            if (student.studentClass == classToView)
             {
-                float grade = it->grades[gradeOffset + i];
-                totalMarks += grade;
-                totalPossibleMarks += 100.0f;
-
-                cout << "    " << i + 1 << ".   " << setw(36) << subjectNames[i] << setw(11);
-                if (grade == -1)
+                cout << setw(15) << student.studentId;
+                size_t gradeIndex = gradeOffset;
+                for (const auto &subjectCode : subjectCodes)
                 {
-                    cout << "-";
+                    if (student.grades[gradeIndex] == -1)
+                    {
+                        cout << setw(15) << "-";
+                    }
+                    else
+                    {
+                        if (student.grades[gradeIndex] < 40.0f)
+                        {
+                            cout << "\033[1;31m";
+                        }
+                        else
+                        {
+                            cout << "\033[1;32m";
+                        }
+                        cout << setw(15) << static_cast<int>(student.grades[gradeIndex]) << "\033[0m";
+                    }
+                    gradeIndex++;
+                }
+                if (student.attendancePercentage == -1)
+                {
+                    cout << setw(15) << "-";
                 }
                 else
                 {
-                    cout << grade;
+                    if (student.attendancePercentage < 80.0f)
+                    {
+                        cout << "\033[1;31m";
+                    }
+                    else
+                    {
+                        cout << "\033[1;32m";
+                    }
+                    cout << student.attendancePercentage << "%\033[0m";
                 }
-                cout << setw(10) << getGradeLetter(grade) << endl;
+                cout << endl;
             }
         }
-        cout << "----------------------------------------------------------------------------" << endl;
-        cout << "Attendance : ";
-        if (it->attendancePercentage == -1)
-        {
-            cout << "-";
-        }
-        else
-        {
-            if (it->attendancePercentage < 80.0f)
-            {
-                cout << "\033[1;31m";
-            }
-            else
-            {
-                cout << "\033[1;32m";
-            }
-            cout << it->attendancePercentage << "%" << "\033[0m";
-        }
-        cout << endl;
-        cout << "============================================================================" << endl;
-
+        cout << "---------------------------------------------------------------------------------------------------------------------------------------" << endl;
         system("pause");
         system("cls");
     }
+void student_attendance_and_grades() {
+    vector<StudentInfo> students;
+    SubjectLinkedList subjects;
+    loadStudentGradeAttendance("gradeAttendance.txt", students, subjects);
+
+    vector<Teacher> teachers;
+    loadUsers("user.txt", teachers);
+
+    cout << "=======================================================================================================" << endl;
+    cout << "                                       View Grades and Attendance" << endl;
+    cout << "=======================================================================================================" << endl;
+    cout << "List of students in your class (" << this->m_class << "):" << endl;
+    vector<string> studentIdsInClass;
+    for (const auto& teacher : teachers) {
+        if (teacher.m_type == "2" && teacher.m_class == this->m_class) {
+            cout << "    ID: " << teacher.m_id << " | Name: " << teacher.m_name << endl;
+            studentIdsInClass.push_back(teacher.m_id);
+        }
+    }
+    cout << "=======================================================================================================" << endl;
+
+    string studentId;
+    cout << "    Enter the student ID : ";
+    cin >> studentId;
+
+    auto it = find_if(students.begin(), students.end(), [&](const StudentInfo &s) {
+        return s.studentId == studentId;
+    });
+
+    if (it == students.end() || it->studentClass != this->m_class) {
+        do {
+            cout << "\033[1;31m    Student not found or not in your class. Please make sure you enter the correct student ID. \033[0m" << endl;
+            cout << "=======================================================================================================" << endl;
+            cout << "    Enter the correct student ID : ";
+            cin >> studentId;
+            it = find_if(students.begin(), students.end(), [&](const StudentInfo &s) {
+                return s.studentId == studentId;
+            });
+        } while (it == students.end() || it->studentClass != this->m_class);
+        system("cls");
+    }
+
+    system("cls");
+    cout << "============================================================================" << endl;
+    cout << "                       STUDENT MARKS AND ATTENDANCE                         " << endl;
+    cout << "============================================================================" << endl;
+    cout << "    ID   : " << left << setw(30) << it->studentId << "Class  : " << it->studentClass << endl;
+
+    vector<pair<string, string>> subjectsForClass;
+    loadSubjectsForClass(it->studentClass, subjectsForClass);
+
+    string terms[3] = {"First Term Exam", "Midterm Exam", "Final Exam"};
+
+    for (int term = 0; term < 3; ++term) {
+        cout << "----------------------------------------------------------------------------" << endl;
+        cout << "                       \033[1;34m" << "Marks for " << terms[term] << "\033[0m" << endl;
+        cout << "----------------------------------------------------------------------------" << endl;
+        cout << "    No.  " << left << setw(35) << "Subject" << setw(10) << "Marks" << setw(10) << "Grades " << endl;
+
+        int gradeOffset = term * subjectsForClass.size();
+        for (size_t i = 0; i < subjectsForClass.size(); ++i) {
+            float grade = it->grades[gradeOffset + i];
+
+            cout << "    " << i + 1 << ".   " << setw(36) << subjectsForClass[i].second << setw(11);
+            if (grade == -1) {
+                cout << "-";
+            } else {
+                cout << grade;
+            }
+            cout << setw(10) << getGradeLetter(grade) << endl;
+        }
+    }
+
+    cout << "----------------------------------------------------------------------------" << endl;
+    cout << "Attendance : ";
+    if (it->attendancePercentage == -1) {
+        cout << "-";
+    } else {
+        if (it->attendancePercentage < 80.0f) {
+            cout << "\033[1;31m";
+        } else {
+            cout << "\033[1;32m";
+        }
+        cout << it->attendancePercentage << "%" << "\033[0m";
+    }
+    cout << endl;
+    cout << "============================================================================" << endl;
+
+    system("pause");
+    system("cls");
+}
+
 
 void update_student_comment() {
     vector<StudentInfo> students;
@@ -1101,6 +1104,7 @@ void update_student_comment() {
     }
 
     system("pause");
+    system("cls");
 }
 
 void manage_student_awards() {
@@ -1186,15 +1190,6 @@ void manage_student_awards() {
     system("cls");
 }
 };
-
-vector<float> Teacher::getTermMarks(const StudentInfo& student, int term, int subjectsCount) const {
-    vector<float> termMarks;
-    int startIdx = (term - 1) * subjectsCount;
-    for (int i = 0; i < subjectsCount; ++i) {
-        termMarks.push_back(student.grades[startIdx + i]);
-    }
-    return termMarks;
-}
 
 class Student : public Identity
 {
