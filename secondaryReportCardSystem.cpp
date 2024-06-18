@@ -553,6 +553,11 @@ public:
                     subjectsForClass.push_back({subjectCode, subjectName});
                     break;
                 }
+
+                else if (userType == "2") 
+                {  
+                    teachers.emplace_back(userType, id, name, password, gender, classId);
+                }
             }
         }
     }
@@ -904,9 +909,24 @@ public:
         SubjectLinkedList subjects;
         loadStudentGradeAttendance("gradeAttendance.txt", students, subjects);
 
+        vector<Teacher> teachers;
+        loadUsers("user.txt", teachers);
+
         cout << "=======================================================================================================" << endl;
         cout << "                                       View Grades and Attendance" << endl;
         cout << "=======================================================================================================" << endl;
+        cout << "List of students in your class (" << this->m_class << "):" << endl;
+        vector<string> studentIdsInClass;
+        for (const auto& teacher : teachers) 
+        {
+            if (teacher.m_type == "2" && teacher.m_class == this->m_class) 
+            {
+                cout << "    ID: " << teacher.m_id << " | Name: " << teacher.m_name << endl;
+                studentIdsInClass.push_back(teacher.m_id);
+            }
+        }
+        cout << "=======================================================================================================" << endl;
+
         string studentId;
         cout << "    Enter the student ID : ";
         cin >> studentId;
