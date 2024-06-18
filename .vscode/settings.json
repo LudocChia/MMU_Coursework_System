@@ -12,6 +12,7 @@
                 "fstream": "cpp",
                 "limits": "cpp",
                 "xutility": "cpp",
-                "xiosbase": "cpp"
+                "xiosbase": "cpp",
+                "unordered_map": "cpp"
         }
 }
