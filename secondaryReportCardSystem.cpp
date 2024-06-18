@@ -553,11 +553,6 @@ public:
                     subjectsForClass.push_back({subjectCode, subjectName});
                     break;
                 }
-
-                else if (userType == "2") 
-                {  
-                    teachers.emplace_back(userType, id, name, password, gender, classId);
-                }
             }
         }
     }
@@ -907,10 +902,11 @@ public:
     {
         vector<StudentInfo> students;
         SubjectLinkedList subjects;
+        unordered_map<string, string> studentNames;
         loadStudentGradeAttendance("gradeAttendance.txt", students, subjects);
 
         vector<Teacher> teachers;
-        loadUsers("user.txt", teachers);
+        loadUsers("user.txt", teachers,studentNames);
 
         cout << "=======================================================================================================" << endl;
         cout << "                                       View Grades and Attendance" << endl;
