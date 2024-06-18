@@ -893,7 +893,7 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
         }
     }//end of view class and attendance
 
-    //for 4, binary search not complete yet, still fixing
+    //for 4, hash search not complete yet, still fixing
     void merge(vector<pair<float, string>> &grades, int left, int mid, int right) 
     {
         int n1 = mid - left + 1;
@@ -938,6 +938,7 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
         }
     }
 
+    // Function to perform merge sort
     void mergeSort(vector<pair<float, string>> &grades, int left, int right) 
     {
         if (left < right) 
@@ -949,20 +950,13 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
         }
     }
 
-    int binarySearch(const vector<pair<float, string>> &grades, float target) 
+    // Function to perform hash-based search
+    string hashSearch(const unordered_map<float, string> &gradesMap, float target) 
     {
-        int left = 0, right = grades.size() - 1;
-        while (left <= right) 
-        {
-            int mid = left + (right - left) / 2;
-            if (grades[mid].first == target)
-                return mid;
-            if (grades[mid].first < target)
-                left = mid + 1;
-            else
-                right = mid - 1;
-        }
-        return -1;
+        auto it = gradesMap.find(target);
+        if (it != gradesMap.end())
+            return it->second;
+        return "";
     }
 
     void student_attendance_and_grades() 
@@ -1070,19 +1064,19 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
             } 
 
             else 
-            {
-            
-            cout << "\033[1;32m";
+            {   
+                cout << "\033[1;32m";
             }
             cout << it->attendancePercentage << "%" << "\033[0m";
         }
         cout << endl;
         cout << "============================================================================" << endl;
 
-        // Ask user for sorting
-        cout << "Enter 1 for Merge Sort, 2 for Binary Search, or 3 to go back to menu: ";
+        // Ask user for sorting or searching
+        cout << "Enter 1 for Merge Sort, 2 for Hash Search, or 4 to go back to menu: ";
         int sortChoice;
         cin >> sortChoice;
+
         if (sortChoice == 1) 
         {
             cout << "Sorted Grades:" << endl;
@@ -1141,30 +1135,35 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
                 }
             }
         }
-        else if (sortChoice == 2) 
+
+        else if (sortChoice == 2)
         {
+            unordered_map<float, string> gradesMap;
+            for (const auto& grade : allTermGrades)
+            {
+                gradesMap[grade.first] = grade.second;
+            }
+
             float target;
             cout << "Enter the grade to search for: ";
             cin >> target;
-            int result = binarySearch(allTermGrades, target);
-            if (result != -1) 
+            string result = hashSearch(gradesMap, target);
+            if (!result.empty()) 
             {
-                cout << "Grade found: " << allTermGrades[result].first << " in subject " << allTermGrades[result].second << endl;
+                cout << "Grade found: " << target << " in subject " << result << endl;
             } 
             else 
             {
                 cout << "Grade not found" << endl;
             }
-        } 
+        }
         else 
         {
             return;
         }
-
         system("pause");
         system("cls");
     }
-
     //end of 4
 
 void update_student_comment() {
