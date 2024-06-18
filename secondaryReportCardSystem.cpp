@@ -932,7 +932,7 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
         system("cls");
     }
 
-    //for 4, not complete yet, still fix
+    //for 4, binary search not complete yet, still fixing
     void merge(vector<pair<float, string>> &grades, int left, int mid, int right) 
     {
         int n1 = mid - left + 1;
@@ -1045,7 +1045,8 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
                 cout << "=======================================================================================================" << endl;
                 cout << "    Enter the correct student ID : ";
                 cin >> studentId;
-                it = find_if(students.begin(), students.end(), [&](const StudentInfo &s) {
+                it = find_if(students.begin(), students.end(), [&](const StudentInfo &s) 
+                {
                     return s.studentId == studentId;
                 });
             } while (it == students.end() || it->studentClass != this->m_class);
@@ -1063,7 +1064,8 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
 
         string terms[3] = {"First Term Exam", "Midterm Exam", "Final Exam"};
         vector<pair<float, string>> allTermGrades; // Store all term grades here
-        for (int term = 0; term < 3; ++term) 
+
+        for (int term = 0; term < 3; ++term)
         {
             cout << "----------------------------------------------------------------------------" << endl;
             cout << "                       \033[1;34m" << "Marks for " << terms[term] << "\033[0m" << endl;
@@ -1080,9 +1082,9 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
                 if (grade == -1) 
                 {
                     cout << "-";
-                } 
+                }   
                 else 
-                {
+                {  
                     cout << grade;
                 }
                 cout << setw(10) << getGradeLetter(grade) << endl;
@@ -1093,48 +1095,91 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
 
         cout << "----------------------------------------------------------------------------" << endl;
         cout << "Attendance : ";
+
         if (it->attendancePercentage == -1) 
         {
             cout << "-";
-        } 
+        }   
         else 
         {
             if (it->attendancePercentage < 80.0f) 
             {
                 cout << "\033[1;31m";
             } 
+
             else 
             {
-                cout << "\033[1;32m";
+            
+            cout << "\033[1;32m";
             }
             cout << it->attendancePercentage << "%" << "\033[0m";
         }
         cout << endl;
         cout << "============================================================================" << endl;
-        int option;
-        cout << "Enter 1 for Merge Sort, 2 for Binary Search, or 3 to go back to menu: ";
-        cin >> option;
 
-        if (option == 1) 
+        // Ask user for sorting
+        cout << "Enter 1 for Merge Sort, 2 for Binary Search, or 3 to go back to menu: ";
+        int sortChoice;
+        cin >> sortChoice;
+        if (sortChoice == 1) 
         {
-            mergeSort(allTermGrades, 0, allTermGrades.size() - 1);
-            cout << "Sorted Grades: " << endl;
-            for (size_t i = 0; i < allTermGrades.size(); ++i) 
+            cout << "Sorted Grades:" << endl;
+
+            for (int term = 0; term < 3; ++term) 
             {
-                float grade = allTermGrades[i].first;
-                cout << "    " << i + 1 << ".   " << setw(36) << allTermGrades[i].second << setw(11);
-                if (grade == -1) 
+                cout << "----------------------------------------------------------------------------" << endl;
+                cout << "                       Sorted Marks for " << terms[term] << endl;
+                cout << "----------------------------------------------------------------------------" << endl;
+                cout << "    No.  " << left << setw(35) << "Subject" << setw(10) << "Marks" << setw(10) << "Grades " << endl;
+
+                int gradeOffset = term * subjectsForClass.size();
+                vector<pair<float, string>> termGrades;
+                for (size_t i = 0; i < subjectsForClass.size(); ++i) 
                 {
-                    cout << "-";
-                } 
-                else 
-                {
-                    cout << grade;
+                    float grade = it->grades[gradeOffset + i];
+                    termGrades.push_back({grade, subjectsForClass[i].second});
                 }
-                cout << setw(10) << getGradeLetter(grade) << endl;
+
+                mergeSort(termGrades, 0, termGrades.size() - 1);
+
+                for (size_t i = 0; i < termGrades.size(); ++i) 
+                {
+                    cout << "    " << i + 1 << ".   " << setw(36) << termGrades[i].second << setw(11) << termGrades[i].first << setw(10) << getGradeLetter(termGrades[i].first) << endl;
+                }
             }
-        } 
-        else if (option == 2) 
+            // Ask user for comparison
+            cout << "Do you want to compare marks across terms for the same subjects? (y/n): ";
+            char compareChoice;
+            cin >> compareChoice;
+            if (compareChoice == 'y' || compareChoice == 'Y') 
+            {
+                cout << "----------------------------------------------------------------------------" << endl;
+                cout << "                Comparison of Marks across Terms for Same Subjects" << endl;
+                cout << "----------------------------------------------------------------------------" << endl;
+                cout << "    No.  " << left << setw(20) << "Subject" << setw(20) << "First Term" << setw(21.2) << "Midterm" << setw(21.2) << "Final" << endl;
+
+                for (size_t i = 0; i < subjectsForClass.size(); ++i) 
+                {
+                    cout << "    " << i + 1 << ".   " << setw(23) << subjectsForClass[i].second;
+
+                    for (int term = 0; term < 3; ++term) 
+                    {
+                        int gradeOffset = term * subjectsForClass.size();
+                        float grade = it->grades[gradeOffset + i];
+                        if (grade == -1) 
+                        {
+                            cout << setw(20) << "-";
+                        } 
+                        else 
+                        {
+                            cout << setw(20) << grade;
+                        }
+                    }
+                    cout << endl;
+                }
+            }
+        }
+        else if (sortChoice == 2) 
         {
             float target;
             cout << "Enter the grade to search for: ";
@@ -1153,9 +1198,11 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
         {
             return;
         }
+
         system("pause");
         system("cls");
     }
+
     //end of 4
 
 void update_student_comment() {
