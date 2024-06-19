@@ -588,7 +588,7 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
         if (userType == "1") {  // Teacher
             teachers.emplace_back(userType, id, name, password, gender, classId);
         } else if (userType == "2") { // Student
-            studentNames[id] = name;
+            teachers.emplace_back(userType, id, name, password, gender, classId);
         }
     }
     file.close();
@@ -1236,7 +1236,7 @@ void clearScreen() {
         cout << "============================================================================" << endl;
 
         // Ask user for sorting or searching
-        cout << "Enter 1 for Merge Sort, 2 for Hash Search, or 4 to go back to menu: ";
+        cout << "Enter 1 for Merge Sort, 2 for Hash Search, or 3 to go back to menu: ";
         int sortChoice;
         cin >> sortChoice;
 
