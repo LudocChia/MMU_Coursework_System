@@ -14,6 +14,7 @@
                 "xutility": "cpp",
                 "xiosbase": "cpp",
                 "unordered_map": "cpp",
-                "numbers": "cpp"
+                "numbers": "cpp",
+                "iosfwd": "cpp"
         }
 }
