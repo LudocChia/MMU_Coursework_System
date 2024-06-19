@@ -629,8 +629,9 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
         getline(ss, classId, '|');
         if (userType == "1") {  // Teacher
             teachers.emplace_back(userType, id, name, password, gender, classId);
-        } else if (userType == "2") { // Student
+        } else if (userType == "2") { // Student 
             studentNames[id] = name;
+            teachers.emplace_back(userType, id, name, password, gender, classId);
         }
     }
     file.close();
@@ -775,9 +776,20 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
                 char updateAnother;
                 cout << "Do you want to update another subject mark for this student? (Y/N): ";
                 cin >> updateAnother;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                while(updateAnother != 'y' && updateAnother != 'Y' && updateAnother != 'n' && updateAnother != 'N'){
+                    cout<<"\033[1;31mPlease enter Y or N only.\033[0m\n\nPlease enter again (Y/N): ";
+                    cin>>updateAnother;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
+
                 if (updateAnother != 'y' && updateAnother != 'Y') {
                     continueUpdating = false;
                 }
+                
+                
+
             }
         }
     }
@@ -1149,13 +1161,41 @@ void clearScreen() {
     }
 
     // Function to perform hash-based search
-    string hashSearch(const unordered_map<float, string> &gradesMap, float target) 
+    void hashSearchSubject(const StudentInfo& student, const vector<pair<string, string>>& subjectsForClass) 
     {
-        auto it = gradesMap.find(target);
-        if (it != gradesMap.end())
-            return it->second;
-        return "";
+        unordered_map<string, vector<float>> subjectGradesMap;
+
+        // Populate the hash map with subject grades
+        for (size_t i = 0; i < subjectsForClass.size(); ++i) 
+        {
+            vector<float> grades;
+            for (int term = 0; term < 3; ++term) 
+            {
+                grades.push_back(student.grades[term * subjectsForClass.size() + i]);
+            }
+            subjectGradesMap[subjectsForClass[i].second] = grades;
+        }
+
+        string subjectName;
+        cout << "Enter the subject name to search: ";
+        cin.ignore();
+        getline(cin, subjectName);
+
+        auto it = subjectGradesMap.find(subjectName);
+        if (it != subjectGradesMap.end()) 
+        {
+            cout << "----------------------------------------------------------------------------" << endl;
+            cout << "Subject: " << subjectName << endl;
+            cout << "First Term: " << fixed << setprecision(2) <<  (it->second[0] == -1 ? "-" : to_string(it->second[0])) << endl;
+            cout << "Midterm: " << fixed << setprecision(2) <<  (it->second[1] == -1 ? "-" : to_string(it->second[1])) << endl;
+            cout << "Final: "  << fixed << setprecision(2) << (it->second[2] == -1 ? "-" : to_string(it->second[2])) << endl;
+        } 
+        else 
+        {
+            cout << "Subject not found." << endl;
+        }
     }
+
 
     void student_attendance_and_grades() 
     {
@@ -1165,7 +1205,7 @@ void clearScreen() {
         loadStudentGradeAttendance("gradeAttendance.txt", students, subjects);
 
         vector<Teacher> teachers;
-        loadUsers("user.txt", teachers,studentNames);
+        loadUsers("user.txt", teachers, studentNames);
 
         cout << "=======================================================================================================" << endl;
         cout << "                                       View Grades and Attendance" << endl;
@@ -1219,7 +1259,7 @@ void clearScreen() {
         string terms[3] = {"First Term Exam", "Midterm Exam", "Final Exam"};
         vector<pair<float, string>> allTermGrades; // Store all term grades here
 
-        for (int term = 0; term < 3; ++term)
+        for (int term = 0; term < 3; ++term) 
         {
             cout << "----------------------------------------------------------------------------" << endl;
             cout << "                       \033[1;34m" << "Marks for " << terms[term] << "\033[0m" << endl;
@@ -1236,9 +1276,9 @@ void clearScreen() {
                 if (grade == -1) 
                 {
                     cout << "-";
-                }   
+                } 
                 else 
-                {  
+                {
                     cout << grade;
                 }
                 cout << setw(10) << getGradeLetter(grade) << endl;
@@ -1249,20 +1289,18 @@ void clearScreen() {
 
         cout << "----------------------------------------------------------------------------" << endl;
         cout << "Attendance : ";
-
         if (it->attendancePercentage == -1) 
         {
             cout << "-";
-        }   
+        } 
         else 
         {
             if (it->attendancePercentage < 80.0f) 
             {
                 cout << "\033[1;31m";
             } 
-
             else 
-            {   
+            {
                 cout << "\033[1;32m";
             }
             cout << it->attendancePercentage << "%" << "\033[0m";
@@ -1278,7 +1316,6 @@ void clearScreen() {
         if (sortChoice == 1) 
         {
             cout << "Sorted Grades:" << endl;
-
             for (int term = 0; term < 3; ++term) 
             {
                 cout << "----------------------------------------------------------------------------" << endl;
@@ -1301,6 +1338,7 @@ void clearScreen() {
                     cout << "    " << i + 1 << ".   " << setw(36) << termGrades[i].second << setw(11) << termGrades[i].first << setw(10) << getGradeLetter(termGrades[i].first) << endl;
                 }
             }
+
             // Ask user for comparison
             cout << "Do you want to compare marks across terms for the same subjects? (y/n): ";
             char compareChoice;
@@ -1315,7 +1353,6 @@ void clearScreen() {
                 for (size_t i = 0; i < subjectsForClass.size(); ++i) 
                 {
                     cout << "    " << i + 1 << ".   " << setw(23) << subjectsForClass[i].second;
-
                     for (int term = 0; term < 3; ++term) 
                     {
                         int gradeOffset = term * subjectsForClass.size();
@@ -1332,35 +1369,17 @@ void clearScreen() {
                     cout << endl;
                 }
             }
-        }
-
-        else if (sortChoice == 2)
+        } 
+        else if (sortChoice == 2) 
         {
-            unordered_map<float, string> gradesMap;
-            for (const auto& grade : allTermGrades)
-            {
-                gradesMap[grade.first] = grade.second;
-            }
-
-            float target;
-            cout << "Enter the grade to search for: ";
-            cin >> target;
-            string result = hashSearch(gradesMap, target);
-            if (!result.empty()) 
-            {
-                cout << "Grade found: " << target << " in subject " << result << endl;
-            } 
-            else 
-            {
-                cout << "Grade not found" << endl;
-            }
-        }
+            hashSearchSubject(*it, subjectsForClass);
+        } 
         else 
         {
-            return;
+        return;
         }
+
         system("pause");
-        system("cls");
     }
     //end of 4
 
