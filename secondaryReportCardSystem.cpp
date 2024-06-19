@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include<conio.h>
 #include <windows.h>
+#include <sstream>
 
 using namespace std;
 
@@ -68,7 +69,7 @@ struct AwardLinkedList
                 }
                 delete current;
                 return true;
-                               // Deletes an award from the linked list if it matches the targetAward.
+                // Deletes an award from the linked list if it matches the targetAward.
             }
             prev = current;
             current = current->next;
@@ -1721,7 +1722,10 @@ void view_exam_result_slip() {
 
     if (termChoice < 1 || termChoice > 4) {
         cout << "\033[1;31mInvalid choice. Returning to menu.\033[0m" << endl;
+        system("pause");
+        system("cls");
         return;
+
     }
 
     if (termChoice == 4) {
@@ -2734,6 +2738,9 @@ void activate_new_account() {
             switch (choice)
             {
             case 1:
+                selection_sort(classes);
+                system("pause");
+                system("cls");
                 break;
             case 2:
                 search_classes_or_teachers(classes);
@@ -2745,10 +2752,24 @@ void activate_new_account() {
             }
         } while (choice != 3);
     }
+        //sort using selection sort, and will base on class
+        void selection_sort(vector<string> &arr) {
+        int n = arr.size();
+        for (int i = 0; i < n - 1; i++) {
+            int min_idx = i;
+            for (int j = i + 1; j < n; j++) {
+                if (arr[j] < arr[min_idx]) {
+                    min_idx = j;
+                }
+            }
+            swap(arr[min_idx], arr[i]);
+        }
+    }
 
     // Searches for classes or teachers.
     void search_classes_or_teachers(const vector<string> &classes)
     {
+        system("cls");
         int searchChoice;
         cout << "============================================================================" << endl;
         cout << "                                 SEARCHING                                  " << endl;
@@ -2824,7 +2845,7 @@ void activate_new_account() {
                 break;
             }
         }
-
+        system("cls");
         cout << "============================================================================" << endl;
         cout << "                             CLASS INFORMATION                              " << endl;
         cout << "============================================================================" << endl;
