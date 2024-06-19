@@ -734,9 +734,20 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
                 char updateAnother;
                 cout << "Do you want to update another subject mark for this student? (Y/N): ";
                 cin >> updateAnother;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                while(updateAnother != 'y' && updateAnother != 'Y' && updateAnother != 'n' && updateAnother != 'N'){
+                    cout<<"\033[1;31mPlease enter Y or N only.\033[0m\n\nPlease enter again (Y/N): ";
+                    cin>>updateAnother;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
+
                 if (updateAnother != 'y' && updateAnother != 'Y') {
                     continueUpdating = false;
                 }
+                
+                
+
             }
         }
     }
