@@ -20,6 +20,7 @@ struct AwardNode
     AwardNode *next;
 
     AwardNode(const string &a) : award(a), next(nullptr) {}
+    // Constructor initializes the award and sets the next pointer to null.
 };
 
 struct AwardLinkedList
@@ -27,12 +28,14 @@ struct AwardLinkedList
     AwardNode *head;
 
     AwardLinkedList() : head(nullptr) {}
+    // Constructor initializes the award and sets the next pointer to null.
 
     void addAward(const string &newAward)
     {
         AwardNode *newNode = new AwardNode(newAward);
         newNode->next = head;
         head = newNode;
+         // Adds a new award to the start of the linked list.
     }
 
     void printAwards() const
@@ -42,6 +45,7 @@ struct AwardLinkedList
         {
             cout << current->award << endl;
             current = current->next;
+            // Prints all awards in the linked list.
         }
     }
 
@@ -64,11 +68,13 @@ struct AwardLinkedList
                 }
                 delete current;
                 return true;
+                               // Deletes an award from the linked list if it matches the targetAward.
             }
             prev = current;
             current = current->next;
         }
         return false;
+          // Returns false if the award is not found.
     }
 
     ~AwardLinkedList()
@@ -78,6 +84,7 @@ struct AwardLinkedList
             AwardNode *temp = head;
             head = head->next;
             delete temp;
+            // Destructor deallocates all nodes in the linked list.
         }
     }
 };
@@ -88,6 +95,7 @@ struct CommentNode
     CommentNode *next;
 
     CommentNode(const string &c) : comment(c), next(nullptr) {}
+    // Constructor initializes the comment and sets the next pointer to null.
 };
 
 struct CommentLinkedList
@@ -95,12 +103,14 @@ struct CommentLinkedList
     CommentNode *head;
 
     CommentLinkedList() : head(nullptr) {}
+    // Constructor initializes the head pointer to null.
 
     void addComment(const string &newComment)
     {
         CommentNode *newNode = new CommentNode(newComment);
         newNode->next = head;
         head = newNode;
+        // Adds a new comment to the start of the linked list.
     }
 
     void printComments() const
@@ -110,6 +120,7 @@ struct CommentLinkedList
         {
             cout << current->comment << endl;
             current = current->next;
+            // Prints all comments in the linked list.
         }
     }
 
@@ -132,11 +143,13 @@ struct CommentLinkedList
                 }
                 delete current;
                 return true;
+                                // Deletes a comment from the linked list if it matches the targetComment.
             }
             prev = current;
             current = current->next;
         }
         return false;
+        // Returns false if the comment is not found.
     }
 
     ~CommentLinkedList()
@@ -146,6 +159,7 @@ struct CommentLinkedList
             CommentNode *temp = head;
             head = head->next;
             delete temp;
+             // Destructor deallocates all nodes in the linked list.
         }
     }
 };
@@ -160,6 +174,7 @@ struct SubjectNode
 
     SubjectNode(const string &code, const string &name, const vector<string> &classes)
         : subjectCode(code), subjectName(name), subjectClasses(classes), next(nullptr) {}
+  // Constructor initializes the subject code, name, and classes, and sets the next pointer to null.
 };
 
 struct SubjectLinkedList
@@ -167,12 +182,14 @@ struct SubjectLinkedList
     SubjectNode *head;
 
     SubjectLinkedList() : head(nullptr) {}
+    // Constructor initializes the head pointer to null.
 
     void addSubject(const string &code, const string &name, const vector<string> &classes)
     {
         SubjectNode *newNode = new SubjectNode(code, name, classes);
         newNode->next = head;
         head = newNode;
+        // Adds a new subject to the start of the linked list.
     }
 
     void printSubjects() const
@@ -187,6 +204,7 @@ struct SubjectLinkedList
             }
             cout << endl;
             current = current->next;
+            // Prints all subjects in the linked list.
         }
     }
 
@@ -209,11 +227,13 @@ struct SubjectLinkedList
                 }
                 delete current;
                 return true;
+            // Deletes a subject from the linked list if it matches the code.
             }
             prev = current;
             current = current->next;
         }
         return false;
+         // Returns false if the subject is not found.
     }
 
     ~SubjectLinkedList()
@@ -223,6 +243,7 @@ struct SubjectLinkedList
             SubjectNode *temp = head;
             head = head->next;
             delete temp;
+            // Destructor deallocates all nodes in the linked list.
         }
     }
 };
@@ -240,6 +261,7 @@ struct StudentInfo
     StudentInfo() : attendancePercentage(0.0)
     {
         grades.resize(21, 0.0);
+        // Constructor initializes attendancePercentage to 0.0 and resizes grades vector to 21 with all elements set to 0.0.
     }
 };
 
@@ -248,12 +270,15 @@ void clearInputStream()
     cin.clear();
     while (cin.get() != '\n')
         ;
+        // Clears the input stream to handle invalid inputs.
 }
 
 class Identity
 {
 public:
     virtual void open_menu() = 0;
+     // Pure virtual function to open a menu. Must be overridden by derived classes.
+
 
     string m_type;
     string m_id;
@@ -266,6 +291,7 @@ public:
     {
         ;
     }
+     // Virtual destructor to ensure proper cleanup in derived classes.
 };
 
 class Teacher : public Identity
@@ -291,6 +317,7 @@ public:
         this->m_password = user_password;
         this->m_gender = user_gender;
         this->m_class = user_class;
+        // Constructor to initialize a Teacher object with given parameters.
     }
 
     void loadStudentGradeAttendance(const string& filename, vector<StudentInfo>& students, SubjectLinkedList& subjects) {
@@ -298,6 +325,7 @@ public:
         if (!file.is_open()) {
             cout << "Failed to open " << filename << endl;
             return;
+            // Opens the file and reads student grades and attendance data.
         }
 
         string line;
@@ -312,6 +340,7 @@ public:
             // Load the subjects for the student's class
             vector<pair<string, string>> subjectsForClass;
             loadSubjectsForClass(student.studentClass, subjectsForClass);
+            
 
             // Read the grades for each subject and term
             student.grades.clear();
@@ -365,6 +394,7 @@ public:
 void saveStudentComments(const vector<StudentInfo> &students, const string &filename) {
     ofstream file(filename);
 
+// Writes all comments for each student to the file.
     for (const auto &student : students) {
         CommentNode *current = student.comments.head;
         while (current != nullptr) {
@@ -374,10 +404,11 @@ void saveStudentComments(const vector<StudentInfo> &students, const string &file
     }
 
     file.close();
+     // Closes the file after saving.
 }
 
 
-
+ // Opens the file and reads student comments.
 void loadStudentComments(const string &filename, vector<StudentInfo> &students) {
     ifstream file(filename);
     string line;
@@ -399,13 +430,16 @@ void loadStudentComments(const string &filename, vector<StudentInfo> &students) 
             return s.studentId == studentId;
         });
 
+        // Adds the comment to the corresponding student.
         if (it != students.end()) {
             it->comments.addComment(comment);
         }
     }
+    // Closes the file after reading.
     file.close();
 }
 
+// Opens the file and reads student awards.
 void loadStudentAwards(const string &filename, vector<StudentInfo> &students) {
     ifstream file(filename);
     if (!file.is_open()) {
@@ -425,13 +459,16 @@ void loadStudentAwards(const string &filename, vector<StudentInfo> &students) {
             return s.studentId == studentId;
         });
 
+        // Adds the award to the corresponding student.
         if (it != students.end()) {
             it->awards.addAward(award);
         }
     }
+    // Closes the file after reading.
     file.close();
 }
 
+// Writes all awards for each student to the file.
 void saveStudentAwards(const vector<StudentInfo> &students, const string &filename) {
     ofstream file(filename);
 
@@ -446,6 +483,7 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
     file.close();
 }
 
+    // Converts numerical grade to letter grade.
     string getGradeLetter(float grade)
     {
         if (grade == -1)
@@ -474,6 +512,8 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
             return "F";
     }
 
+
+    // Provides a menu for teachers to update student information, view grades and attendance, and manage comments and awards.
     void open_menu()
     {
         int choice = 0;
@@ -539,6 +579,7 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
         return;
     }
 
+    // Loads subjects that belong to the specified class from a file.
     void loadSubjectsForClass(const string& className, vector<pair<string, string>>& subjectsForClass) {
     ifstream subjectsFile("subjects.txt");
     string line;
@@ -555,7 +596,7 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
         }
     }
 }
-    
+    // Converts a vector of subjects to a linked list of subjects.
     void convertSubjectsForClassToLinkedList(const vector<pair<string, string>>& subjectsForClass, SubjectLinkedList& subjectsLinkedList) {
     subjectsLinkedList.head = nullptr;
     SubjectNode* current = nullptr;
@@ -574,6 +615,7 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
     }
 }
 
+    // Loads users from a file and stores them in the teachers vector and studentNames map.
     void loadUsers(const string& filename, vector<Teacher>& teachers, unordered_map<string, string>& studentNames) {
     ifstream file(filename);
     string line, userType, id, name, password, gender, classId;
@@ -588,7 +630,7 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
         if (userType == "1") {  // Teacher
             teachers.emplace_back(userType, id, name, password, gender, classId);
         } else if (userType == "2") { // Student
-            teachers.emplace_back(userType, id, name, password, gender, classId);
+            studentNames[id] = name;
         }
     }
     file.close();
@@ -921,14 +963,7 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
             cout << "Would you like to sort the students? [1] Yes [2] No: ";
             cin >> sortChoice;
             if (sortChoice != 1) {
-                int viewOtherTerm;
-                cout << "Would you like to view marks for another term? [1] Yes [2] No: ";
-                cin >> viewOtherTerm;
-                if (viewOtherTerm == 1) {
-                    return;
-                } else {
-                    break;
-                }
+                return;
             }
 
             clearScreen();
@@ -1512,6 +1547,7 @@ public:
         ;
     }
 
+    // Constructor to initialize a Student object with given parameters.
     Student(string user_type, string user_id, string user_name, string user_password, string user_gender, string user_class)
     {
         this->m_type = user_type;
@@ -1522,6 +1558,7 @@ public:
         this->m_class = user_class;
     }
 
+     // Converts a numerical grade to a letter grade.
     string getGradeLetter(float grade)
     {
         if (grade == -1)
@@ -1550,6 +1587,7 @@ public:
             return "F";
     }
 
+    // Displays the student menu and handles user input.
     void open_menu()
     {
         int choice = 0;
@@ -1594,6 +1632,7 @@ public:
         return;
     }
 
+    // Loads subjects for a specific class from the file "subjects.txt".
     void loadSubjectsForClass(const string &className, vector<pair<string, string>> &subjectsForClass) {
     ifstream subjectsFile("subjects.txt");
     string line;
@@ -1610,7 +1649,7 @@ public:
         }
     }
 }
-
+// Loads grades and attendance for a specific student from the file "gradeAttendance.txt".
 bool loadGradesForStudent(const string &studentId, vector<float> &grades, float &attendance) {
     ifstream gradesFile("gradeAttendance.txt");
     string line;
@@ -1633,7 +1672,7 @@ bool loadGradesForStudent(const string &studentId, vector<float> &grades, float 
     }
     return false;
 }
-
+// Displays the exam result slip for the student.
 void view_exam_result_slip() {
     vector<pair<string, string>> subjectsForClass;
     loadSubjectsForClass(this->m_class, subjectsForClass);
@@ -1716,7 +1755,7 @@ void view_exam_result_slip() {
     system("pause");
     system("cls");
 }
-
+// Loads all comments for a specific student from the file "comment.txt".
 vector<string> loadStudentComments_All(const string &studentId) {
     ifstream file("comment.txt");
     vector<string> comments;
@@ -1733,7 +1772,7 @@ vector<string> loadStudentComments_All(const string &studentId) {
     }
     return comments;
 }
-
+// Loads all awards for a specific student from the file "awards.txt".
 vector<string> loadStudentAwards_New(const string &studentId) {
     ifstream file("awards.txt");
     vector<string> awards;
@@ -1750,7 +1789,7 @@ vector<string> loadStudentAwards_New(const string &studentId) {
     return awards;
 }
 
-
+// Displays the report card for the student, including grades, attendance, comments, and awards.
 void view_report_card() {
     vector<pair<string, string>> subjectsForClass;
     loadSubjectsForClass_New(this->m_class, subjectsForClass);
@@ -1853,7 +1892,7 @@ void view_report_card() {
     system("pause");
     system("cls");
 }
-
+// Loads subjects for a specific class from the file "subjects.txt".
 void loadSubjectsForClass_New(const string &className, vector<pair<string, string>> &subjectsForClass) {
     ifstream subjectsFile("subjects.txt");
     string line;
@@ -1870,7 +1909,7 @@ void loadSubjectsForClass_New(const string &className, vector<pair<string, strin
         }
     }
 }
-
+ // Loads grades and attendance for a specific student from the file "gradeAttendance.txt".
 bool loadGradesForStudent_New(const string &studentId, vector<float> &grades, float &attendance) {
     ifstream gradesFile("gradeAttendance.txt");
     string line;
@@ -1894,6 +1933,7 @@ bool loadGradesForStudent_New(const string &studentId, vector<float> &grades, fl
     return false;
 }
 
+ // Converts a numerical grade to a letter grade (overloaded version).
 string getGradeLetter_New(float grade) {
         if (grade == -1)
             return "-";
@@ -1932,6 +1972,7 @@ public:
 
     ~Admin() { ; }
 
+    // Constructor to initialize an Admin object with given parameters and load subjects from a file.
     Admin(string name, string password)
     {
         this->m_name = name;
@@ -1940,6 +1981,7 @@ public:
         loadSubjects("subjects.txt");
     }
 
+    // Displays the admin menu and handles user input.
     void open_menu() override
     {
         int choice = 0;
@@ -2015,6 +2057,7 @@ public:
     }
 
 private:
+    // Displays details of a teacher.
     void display_teacher_details(const Teacher &teacher)
     {
         cout << "============================================================================" << endl;
@@ -2024,6 +2067,7 @@ private:
         cout << "    Password : " << left << setw(30) << teacher.m_password << "Class  : " << setw(15) << teacher.m_class << endl;
     }
 
+    // Displays details of a student.   
     void display_student_details(const Student &student)
     {
         cout << "============================================================================" << endl;
@@ -2033,6 +2077,7 @@ private:
         cout << "    Password : " << left << setw(30) << student.m_password << "Class  : " << setw(15) << student.m_class << endl;
     }
 
+    // Allows the admin to edit a user profile.
     void edit_user_profile()
     {
         int edit_choice;
@@ -2204,7 +2249,7 @@ private:
             system("cls");
         } while (edit_choice != 5);
     }
-
+// Activates a new user account.
 void activate_new_account() {
     int choice;
     char confirm;
@@ -2341,7 +2386,7 @@ void activate_new_account() {
                         for (size_t i = 0; i < subjectCodes.size() * 3; ++i) {
                             gradeFile << "|-1";
                         }
-                        gradeFile << "|0" << endl; // attendance 在最后的
+                        gradeFile << "|0" << endl; // attendance is at the last
                         gradeFile.close();
                     } else {
                         cout << "Unable to open gradeAttendance.txt for writing" << endl;
@@ -2382,7 +2427,7 @@ void activate_new_account() {
 }
 
 
-
+    // Deactivates an existing user account.
     void deactivate_exist_account()
     {
         int choice;
@@ -2489,6 +2534,7 @@ void activate_new_account() {
         } while (choice != 3);
     }
 
+    // Removes a student's data from a file.
     void removeStudentData(const string &studentId, const string &filename)
     {
         ifstream file(filename);
@@ -2526,16 +2572,19 @@ void activate_new_account() {
         outFile.close();
     }
 
+    // Prints details of a teacher.
     void print_teacher(Teacher &t)
     {
         cout << "    " << left << setw(15) << t.m_id << setw(30) << t.m_name << setw(20) << t.m_password << endl;
     }
 
+    // Prints details of a student.
     void print_student(Student &s)
     {
         cout << "    " << left << setw(15) << s.m_id << setw(30) << s.m_name << setw(20) << s.m_password << endl;
     }
 
+    // Displays the list of teachers or students.
     void view_teacher_or_student_list()
     {
         int choice;
@@ -2613,6 +2662,7 @@ void activate_new_account() {
         } while (choice != 3);
     }
 
+    // Displays the list of all classes.
     void view_all_classes_list()
     {
         vector<string> classes;
@@ -2677,6 +2727,7 @@ void activate_new_account() {
         } while (choice != 3);
     }
 
+    // Searches for classes or teachers.
     void search_classes_or_teachers(const vector<string> &classes)
     {
         int searchChoice;
@@ -2735,6 +2786,7 @@ void activate_new_account() {
         system("cls");
     }
 
+    // Displays information of a class.
     void display_class_info(const string &className)
     {
         int grade = 0;
@@ -2762,6 +2814,7 @@ void activate_new_account() {
         cout << "----------------------------------------------------------------------------" << endl;
     }
 
+    // Adds a new subject to the system.
     void add_subject()
     {
         string subjectCode, subjectName;
@@ -2827,6 +2880,7 @@ void activate_new_account() {
         system("cls");
     }
 
+    // Deletes a subject from the system.
     void delete_subject()
     {
         string subjectCode;
@@ -2875,6 +2929,7 @@ void activate_new_account() {
         system("cls");
     }
 
+    // Reinitializes grades after a subject deletion.
     void reinitialize_grades_after_deletion(const string &deletedSubjectCode)
     {
         ifstream inFile("gradeAttendance.txt");
@@ -2942,6 +2997,7 @@ void activate_new_account() {
         outFile.close();
     }
 
+    // Reinitializes grades for new classes.
     void reinitialize_grades_for_classes(const vector<string> &classes)
     {
         ifstream inFile("gradeAttendance.txt");
@@ -3022,6 +3078,7 @@ void activate_new_account() {
         outFile.close();
     }
 
+    // Displays the list of subjects.
     void view_subjects()
     {
         cout << "============================================================================" << endl;
@@ -3078,6 +3135,7 @@ void activate_new_account() {
         ifs.close();
     }
 
+    // Updates the user file with current data.
     void update_user_file()
     {
         ofstream ofs("user.txt", ios::out | ios::trunc);
@@ -3101,6 +3159,7 @@ void activate_new_account() {
         ofs.close();
     }
 
+    // Updates the comment file with new class data.
     void updateCommentFile(const string &studentId, const string &newClass)
     {
         ifstream file("comment.txt");
@@ -3146,6 +3205,7 @@ void activate_new_account() {
         outFile.close();
     }
 
+    // Updates the grade and attendance file with new class data.
     void updateGradeAttendanceFile(const string &studentId, const string &newClass)
     {
         ifstream file("gradeAttendance.txt");
@@ -3190,6 +3250,7 @@ void activate_new_account() {
         outFile.close();
     }
 
+     // Checks if an ID or subject code is repeated.
     bool check_repeat(const string &id, int type)
     {
         if (type == 1)
@@ -3227,6 +3288,7 @@ void activate_new_account() {
         return false;
     }
 
+    // Loads subjects from a file.
     void loadSubjects(const string &filename)
     {
         ifstream inFile(filename);
@@ -3256,6 +3318,7 @@ void activate_new_account() {
         inFile.close();
     }
 
+    // Saves subjects to a file.
     void saveSubjects(const string &filename)
     {
         ofstream outFile(filename);
@@ -3284,10 +3347,11 @@ void activate_new_account() {
         outFile.close();
     }
 
-    vector<Student> vStu;
-    vector<Teacher> vTea;
-    SubjectLinkedList subjects;
+    vector<Student> vStu; // Vector to store students.
+    vector<Teacher> vTea; // Vector to store teachers.
+    SubjectLinkedList subjects; // List to store subjects.
 
+    // Finds a teacher by ID.
     vector<Teacher>::iterator findTeacherById(vector<Teacher> &teachers, const string &id)
     {
         for (auto it = teachers.begin(); it != teachers.end(); ++it)
@@ -3300,6 +3364,7 @@ void activate_new_account() {
         return teachers.end();
     }
 
+    // Finds a student by ID.
     vector<Student>::iterator findStudentById(vector<Student> &students, const string &id)
     {
         for (auto it = students.begin(); it != students.end(); ++it)
@@ -3312,6 +3377,7 @@ void activate_new_account() {
         return students.end();
     }
 
+    // Counts the number of students in a class.
     int countStudentsInClass(const vector<Student> &students, const string &className)
     {
         int count = 0;
@@ -3335,6 +3401,7 @@ int main()
 {
     int choice = 0;
 
+    // Array to store names of weekdays.
     std::string weekdays[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
     do
@@ -3346,6 +3413,7 @@ int main()
         tm *local = localtime(&now);
         int weekday = local->tm_wday;
 
+        // Display current day and date.
         cout << "\t\t\t\t\t\t" << weekdays[weekday];
         cout << "  " << local->tm_mday << "/" << local->tm_mon + 1 << "/" << local->tm_year + 1900 << endl;
         cout << "    [1] Log in" << endl;
