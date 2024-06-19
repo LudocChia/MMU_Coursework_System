@@ -589,6 +589,7 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
             teachers.emplace_back(userType, id, name, password, gender, classId);
         } else if (userType == "2") { // Student
             studentNames[id] = name;
+            teachers.emplace_back(userType, id, name, password, gender, classId);
         }
     }
     file.close();
