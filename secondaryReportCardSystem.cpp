@@ -588,7 +588,7 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
         if (userType == "1") {  // Teacher
             teachers.emplace_back(userType, id, name, password, gender, classId);
         } else if (userType == "2") { // Student
-            teachers.emplace_back(userType, id, name, password, gender, classId);
+            studentNames[id] = name;
         }
     }
     file.close();
@@ -921,14 +921,7 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
             cout << "Would you like to sort the students? [1] Yes [2] No: ";
             cin >> sortChoice;
             if (sortChoice != 1) {
-                int viewOtherTerm;
-                cout << "Would you like to view marks for another term? [1] Yes [2] No: ";
-                cin >> viewOtherTerm;
-                if (viewOtherTerm == 1) {
-                    return;
-                } else {
-                    break;
-                }
+                return;
             }
 
             clearScreen();
