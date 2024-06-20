@@ -179,6 +179,8 @@ struct SubjectNode
 struct SubjectLinkedList
 {
     SubjectNode *head;
+    unordered_map<string, SubjectNode *> codeMap;
+    unordered_map<string, SubjectNode *> nameMap;
 
     SubjectLinkedList() : head(nullptr) {}
 
@@ -187,6 +189,8 @@ struct SubjectLinkedList
         SubjectNode *newNode = new SubjectNode(code, name, classes);
         newNode->next = head;
         head = newNode;
+        codeMap[code] = newNode;
+        nameMap[name] = newNode;
     }
 
     void printSubjects() const
@@ -221,6 +225,8 @@ struct SubjectLinkedList
                 {
                     prev->next = current->next;
                 }
+                codeMap.erase(current->subjectCode);
+                nameMap.erase(current->subjectName);
                 delete current;
                 return true;
             }
@@ -319,36 +325,28 @@ struct SubjectLinkedList
 
     bool search(int criteria, const string &target)
     {
-        SubjectNode *current = head;
-        bool found = false;
-
-        while (current != nullptr)
+        SubjectNode *result = nullptr;
+        switch (criteria)
         {
-            switch (criteria)
-            {
-            case 1:
-                if (current->subjectCode == target)
-                    found = true;
-                break;
-            case 2:
-                if (current->subjectName == target)
-                    found = true;
-                break;
-            default:
-                break;
-            }
+        case 1:
+            if (codeMap.find(target) != codeMap.end())
+                result = codeMap[target];
+            break;
+        case 2:
+            if (nameMap.find(target) != nameMap.end())
+                result = nameMap[target];
+            break;
+        }
 
-            if (found)
+        if (result)
+        {
+            cout << left << setw(15) << result->subjectCode << setw(20) << result->subjectName;
+            for (const auto &cls : result->subjectClasses)
             {
-                cout << left << setw(15) << current->subjectCode << setw(20) << current->subjectName;
-                for (const auto &cls : current->subjectClasses)
-                {
-                    cout << cls << " ";
-                }
-                cout << endl;
-                return true;
+                cout << cls << " ";
             }
-            current = current->next;
+            cout << endl;
+            return true;
         }
         return false;
     }
