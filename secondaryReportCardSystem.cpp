@@ -2229,36 +2229,49 @@ public:
             }
         }
     }
-    // Loads grades and attendance for a specific student from the file "gradeAttendance.txt".
-    bool loadGradesForStudent_New(const string &studentId, vector<float> &grades, float &attendance)
-    {
-        ifstream gradesFile("gradeAttendance.txt");
-        string line;
-        while (getline(gradesFile, line))
-        {
-            stringstream ss(line);
-            string id, studentClass;
-            getline(ss, id, '|');
-            if (id == studentId)
-            {
-                getline(ss, studentClass, '|');
-                string gradeStr;
-                while (getline(ss, gradeStr, '|'))
-                {
-                    if (gradeStr.find('.') != string::npos)
-                    { // If it contains a dot, it's a float (attendance)
-                        attendance = stof(gradeStr);
-                    }
-                    else
-                    {
-                        grades.push_back(stof(gradeStr));
-                    }
-                }
-                return true;
-            }
-        }
+// Loads grades and attendance for a specific student from the file "gradeAttendance.txt".
+bool loadGradesForStudent_New(const string &studentId, vector<float> &grades, float &attendance) {
+    ifstream gradesFile("gradeAttendance.txt");
+    if (!gradesFile.is_open()) {
+        cerr << "Failed to open the file." << endl;
         return false;
     }
+
+    string line;
+    while (getline(gradesFile, line)) {
+        stringstream ss(line);
+        string id;
+        getline(ss, id, '|');
+
+        // Check if the current line is for the desired student
+        if (id == studentId) {
+            string token;
+            vector<string> tokens;
+
+            // Read all tokens in the line
+            while (getline(ss, token, '|')) {
+                tokens.push_back(token);
+            }
+
+            // The last token is assumed to be attendance
+            if (!tokens.empty()) {
+                attendance = stof(tokens.back());
+                tokens.pop_back(); // Remove the last token
+            }
+
+            // Convert the remaining tokens to grades
+            for (const string& gradeStr : tokens) {
+                grades.push_back(stof(gradeStr));
+            }
+
+            gradesFile.close();
+            return true;
+        }
+    }
+
+    gradesFile.close();
+    return false; // Return false if the student ID was not found
+}
 
     // Converts a numerical grade to a letter grade (overloaded version).
     string getGradeLetter_New(float grade)
