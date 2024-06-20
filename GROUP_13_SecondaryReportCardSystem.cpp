@@ -4566,7 +4566,7 @@ public:
             cin >> studentId;
 
             auto studentIt = find_if(students.begin(), students.end(), [&](const StudentInfo &s)
-                                     { return s.studentId == studentId && s.studentClass == this->m_class; });
+                                     { return s.studentId == studentId && s.studentClass == this->m_class; });//search student
             if (studentIt == students.end())
             {
                 cout << "\033[1;31mStudent not found or not in your class. Please try again.\033[0m\n";
@@ -4583,7 +4583,7 @@ public:
                 studentFound = true;
 
                 vector<pair<string, string>> subjectsForClass;
-                loadSubjectsForClass(this->m_class, subjectsForClass);
+                loadSubjectsForClass(this->m_class, subjectsForClass);//search subject for certain class
 
                 bool continueUpdating = true;
                 while (continueUpdating)
@@ -4606,13 +4606,13 @@ public:
                     switch (termChoice)
                     {
                     case 1:
-                        gradeOffset = 0;
+                        gradeOffset = 0;//set at zero
                         break;
                     case 2:
-                        gradeOffset = subjectsForClass.size();
+                        gradeOffset = subjectsForClass.size();//set to num of subject 
                         break;
                     case 3:
-                        gradeOffset = 2 * subjectsForClass.size();
+                        gradeOffset = 2 * subjectsForClass.size();//set twice
                         break;
                     case 4:
                         return;
