@@ -1,7 +1,11 @@
 0|Admin|Admin|1|None|None
 1|MMU11111|Muhammad Loqman Bin Samat|1|Male|5A
 1|MMU22222|Nur Liyana Binit Rosli|1|Female|5D
-1|MMU123|lau|123|Male|1A
+1|MMU33333|John|33333|Male|1A
+1|MMU44444|Alice|44444|Female|5C
+1|MMU55555|Afiq|55555|Male|2A
+1|MMU66666|Yusry|66666|Male|3A
+1|MMU77777|Ain|77777|Female|3B
 1|MMU12345|Watashiwa|1|Female|5B
 2|1221201382|Lau Yong Pin|123|Male|5A
 2|1221201505|Chia Min Jeng|1|Male|5A
@@ -9,12 +13,61 @@
 2|1221201497|Wong Yi Seng|1|Male|5B
 2|1221201625|Goh Siew Wen|1|Female|5C
 2|1221203197|Cheong Hao Xian|1|Male|5C
-2|123|Lau|123|Male|1A
-2|1221201000|Johnson|111|Male|3D
-2|12212647|hvurfdv|7fvbh|Male|6D
-2|1221201777|Lau Yong A|187evh|Male|7D
-2|1221201321|Lau Yong Pin|321|Male|1A
+2|1221201000|Johnson|111|Male|3A
+2|1221201001|Maisarah|7fvbh|Female|5A
+2|1221201777|Hu Ge|Male|2A|
+2|1221201321|Jay Chou|321|Male|1A
 2|1221201333|Ali Baba|333|Male|5D
 2|1221201444|Ali Buba|444|Female|5D
 2|1221201383|Xiao Ming|3333|Male|5D
 2|1234567890|Aina|1234|Female|5D
+2|1221201001|Alex Tan|001|Male|5A
+2|1221201002|Betty Lim|002|Female|5B
+2|1221201003|Charles Wong|003|Male|5C
+2|1221201004|Diana Lee|004|Female|5D
+2|1221201005|Eric Ng|005|Male|5A
+2|1221201006|Fiona Cheong|006|Female|5B
+2|1221201007|George Tan|007|Male|5C
+2|1221201008|Helen Lim|008|Female|5D
+2|1221201009|Ivan Wong|009|Male|1A
+2|1221201010|Jane Lee|010|Female|2A
+2|1221201011|Kevin Ng|011|Male|3A
+2|1221201012|Lucy Cheong|012|Female|3B
+2|1221201013|Mike Tan|013|Male|5A
+2|1221201014|Nancy Lim|014|Female|5B
+2|1221201015|Oscar Wong|015|Male|5C
+2|1221201016|Paula Lee|016|Female|5D
+2|1221201017|Quincy Ng|017|Male|1A
+2|1221201018|Rachel Cheong|018|Female|2A
+2|1221201019|Steve Tan|019|Male|3A
+2|1221201020|Tina Lim|020|Female|3B
+2|1221201021|Uma Wong|021|Male|5A
+2|1221201022|Victor Lee|022|Female|5B
+2|1221201023|Walter Ng|023|Male|5C
+2|1221201024|Xena Cheong|024|Female|5D
+2|1221201025|Yannis Tan|025|Male|1A
+2|1221201026|Zoe Lim|026|Female|2A
+2|1221201027|Adam Wong|027|Male|3A
+2|1221201028|Bella Lee|028|Female|3B
+2|1221201029|Calvin Ng|029|Male|5A
+2|1221201030|Daisy Cheong|030|Female|5B
+2|1221201031|Edward Tan|031|Male|5C
+2|1221201032|Frances Lim|032|Female|5D
+2|1221201033|Gary Wong|033|Male|1A
+2|1221201034|Holly Lee|034|Female|2A
+2|1221201035|Ian Ng|035|Male|3A
+2|1221201036|Julie Cheong|036|Female|3B
+2|1221201037|Ken Tan|037|Male|5A
+2|1221201038|Laura Lim|038|Female|5B
+2|1221201039|Martin Wong|039|Male|5C
+2|1221201040|Nancy Lee|040|Female|5D
+2|1221201041|Oliver Ng|041|Male|1A
+2|1221201042|Patricia Cheong|042|Female|2A
+2|1221201043|Quinn Tan|043|Male|3A
+2|1221201044|Rose Lim|044|Female|3B
+2|1221201045|Sam Wong|045|Male|5A
+2|1221201046|Tracy Lee|046|Female|5B
+2|1221201047|Ulysses Ng|047|Male|5C
+2|1221201048|Vanessa Cheong|048|Female|5D
+2|1221201049|William Tan|049|Male|1A
+2|1221201050|Xander Lim|050|Male|2A
