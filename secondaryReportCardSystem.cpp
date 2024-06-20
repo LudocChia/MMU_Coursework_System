@@ -2227,49 +2227,56 @@ public:
             }
         }
     }
-// Loads grades and attendance for a specific student from the file "gradeAttendance.txt".
-bool loadGradesForStudent_New(const string &studentId, vector<float> &grades, float &attendance) {
-    ifstream gradesFile("gradeAttendance.txt");
-    if (!gradesFile.is_open()) {
-        cerr << "Failed to open the file." << endl;
-        return false;
-    }
-
-    string line;
-    while (getline(gradesFile, line)) {
-        stringstream ss(line);
-        string id;
-        getline(ss, id, '|');
-
-        // Check if the current line is for the desired student
-        if (id == studentId) {
-            string token;
-            vector<string> tokens;
-
-            // Read all tokens in the line
-            while (getline(ss, token, '|')) {
-                tokens.push_back(token);
-            }
-
-            // The last token is assumed to be attendance
-            if (!tokens.empty()) {
-                attendance = stof(tokens.back());
-                tokens.pop_back(); // Remove the last token
-            }
-
-            // Convert the remaining tokens to grades
-            for (const string& gradeStr : tokens) {
-                grades.push_back(stof(gradeStr));
-            }
-
-            gradesFile.close();
-            return true;
+    // Loads grades and attendance for a specific student from the file "gradeAttendance.txt".
+    bool loadGradesForStudent_New(const string &studentId, vector<float> &grades, float &attendance)
+    {
+        ifstream gradesFile("gradeAttendance.txt");
+        if (!gradesFile.is_open())
+        {
+            cerr << "Failed to open the file." << endl;
+            return false;
         }
-    }
 
-    gradesFile.close();
-    return false; // Return false if the student ID was not found
-}
+        string line;
+        while (getline(gradesFile, line))
+        {
+            stringstream ss(line);
+            string id;
+            getline(ss, id, '|');
+
+            // Check if the current line is for the desired student
+            if (id == studentId)
+            {
+                string token;
+                vector<string> tokens;
+
+                // Read all tokens in the line
+                while (getline(ss, token, '|'))
+                {
+                    tokens.push_back(token);
+                }
+
+                // The last token is assumed to be attendance
+                if (!tokens.empty())
+                {
+                    attendance = stof(tokens.back());
+                    tokens.pop_back(); // Remove the last token
+                }
+
+                // Convert the remaining tokens to grades
+                for (const string &gradeStr : tokens)
+                {
+                    grades.push_back(stof(gradeStr));
+                }
+
+                gradesFile.close();
+                return true;
+            }
+        }
+
+        gradesFile.close();
+        return false; // Return false if the student ID was not found
+    }
 
     // Converts a numerical grade to a letter grade (overloaded version).
     string getGradeLetter_New(float grade)
@@ -3034,17 +3041,62 @@ private:
         } while (choice != 3);
     }
 
-    // Displays the list of all classes.
-    void view_all_classes_list()
+    void display_class_info(const string &className, const string &teacherName, int studentCount, int grade)
     {
-        vector<string> classes;
-        for (const auto &teacher : vTea)
+        system("cls");
+        cout << "============================================================================" << endl;
+        cout << "                             CLASS INFORMATION                              " << endl;
+        cout << "============================================================================" << endl;
+        cout << "    " << left << setw(10) << "Grade" << setw(10) << "Class" << setw(30) << "Teacher Name" << setw(20) << "Student Quantity" << endl;
+        cout << "    " << left << setw(10) << grade << setw(10) << className << setw(30) << teacherName << setw(20) << studentCount << endl;
+        cout << "----------------------------------------------------------------------------" << endl;
+    }
+
+    // Displays the list of all classes.
+    int binary_search(const vector<pair<string, pair<string, int>>> &classes, const string &target)
+    {
+        int left = 0;
+        int right = classes.size() - 1;
+
+        while (left <= right)
         {
-            if (find(classes.begin(), classes.end(), teacher.m_class) == classes.end())
+            int mid = left + (right - left) / 2;
+            if (classes[mid].first == target)
             {
-                classes.push_back(teacher.m_class);
+                return mid;
+            }
+            else if (classes[mid].first < target)
+            {
+                left = mid + 1;
+            }
+            else
+            {
+                right = mid - 1;
             }
         }
+        return -1;
+    }
+
+    void view_all_classes_list()
+    {
+        vector<pair<string, pair<string, int>>> classes;
+        unordered_map<string, pair<string, int>> classMap;
+
+        for (const auto &teacher : vTea)
+        {
+            if (classMap.find(teacher.m_class) == classMap.end())
+            {
+                int studentCount = countStudentsInClass(vStu, teacher.m_class);
+                classMap[teacher.m_class] = make_pair(teacher.m_name, studentCount);
+            }
+        }
+
+        for (const auto &entry : classMap)
+        {
+            classes.push_back(make_pair(entry.first, entry.second));
+        }
+
+        sort(classes.begin(), classes.end());
 
         int choice;
         do
@@ -3055,25 +3107,14 @@ private:
             cout << right << setw(70) << "Total Class: " << classes.size() << endl;
             cout << "    " << left << setw(10) << "Grade" << setw(10) << "Class" << setw(30) << "Teacher Name" << setw(20) << "Student Quantity" << endl;
 
-            for (const auto &className : classes)
+            for (const auto &classInfo : classes)
             {
                 int grade = 0;
-                if (isdigit(className[0]))
+                if (isdigit(classInfo.first[0]))
                 {
-                    grade = className[0] - '0';
+                    grade = classInfo.first[0] - '0';
                 }
-
-                int studentCount = countStudentsInClass(vStu, className);
-                string teacherName = "Unknown";
-                for (const auto &teacher : vTea)
-                {
-                    if (teacher.m_class == className)
-                    {
-                        teacherName = teacher.m_name;
-                        break;
-                    }
-                }
-                cout << "    " << left << setw(10) << grade << setw(10) << className << setw(30) << teacherName << setw(20) << studentCount << endl;
+                cout << "    " << left << setw(10) << grade << setw(10) << classInfo.first << setw(30) << classInfo.second.first << setw(20) << classInfo.second.second << endl;
             }
 
             cout << "----------------------------------------------------------------------------" << endl;
@@ -3087,13 +3128,81 @@ private:
             switch (choice)
             {
             case 1:
-                selection_sort(classes);
+                // Already sorted, no action needed
                 system("pause");
                 system("cls");
                 break;
             case 2:
-                search_classes_or_teachers(classes);
+            {
+                system("cls");
+                int searchChoice;
+                cout << "============================================================================" << endl;
+                cout << "                                 SEARCHING                                  " << endl;
+                cout << "============================================================================" << endl;
+                cout << "    [1] Search by Class" << endl;
+                cout << "    [2] Search by Teacher Name" << endl;
+                cout << "----------------------------------------------------------------------------" << endl;
+                cout << "    Please Enter Your Choice: ";
+                cin >> searchChoice;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                if (searchChoice == 1)
+                {
+                    string className;
+                    cout << "    Enter Class Name: ";
+                    getline(cin, className);
+
+                    int index = binary_search(classes, className);
+                    if (index != -1)
+                    {
+                        const auto &classInfo = classes[index];
+                        int grade = 0;
+                        if (isdigit(classInfo.first[0]))
+                        {
+                            grade = classInfo.first[0] - '0';
+                        }
+                        display_class_info(classInfo.first, classInfo.second.first, classInfo.second.second, grade);
+                    }
+                    else
+                    {
+                        cout << "\033[1;31m    Class not found.\033[0m" << endl;
+                    }
+                }
+                else if (searchChoice == 2)
+                {
+                    string teacherName;
+                    cout << "    Enter Teacher Name: ";
+                    getline(cin, teacherName);
+
+                    bool found = false;
+                    for (const auto &classInfo : classes)
+                    {
+                        if (classInfo.second.first == teacherName)
+                        {
+                            int grade = 0;
+                            if (isdigit(classInfo.first[0]))
+                            {
+                                grade = classInfo.first[0] - '0';
+                            }
+                            display_class_info(classInfo.first, classInfo.second.first, classInfo.second.second, grade);
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                    {
+                        cout << "\033[1;31m    Teacher not found.\033[0m" << endl;
+                    }
+                }
+                else
+                {
+                    cout << "\033[1;31m    Invalid Choice. Please Try Again.\033[0m" << endl;
+                }
+
+                system("pause");
+                system("cls");
                 break;
+            }
             case 3:
                 return;
             default:
@@ -3117,94 +3226,6 @@ private:
             }
             swap(arr[min_idx], arr[i]);
         }
-    }
-
-    // Searches for classes or teachers.
-    void search_classes_or_teachers(const vector<string> &classes)
-    {
-        system("cls");
-        int searchChoice;
-        cout << "============================================================================" << endl;
-        cout << "                                 SEARCHING                                  " << endl;
-        cout << "============================================================================" << endl;
-        cout << "    [1] Search by Class" << endl;
-        cout << "    [2] Search by Teacher Name" << endl;
-        cout << "----------------------------------------------------------------------------" << endl;
-        cout << "    Please Enter Your Choice: ";
-        cin >> searchChoice;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-        if (searchChoice == 1)
-        {
-            string className;
-            cout << "    Enter Class Name: ";
-            getline(cin, className);
-
-            auto it = find(classes.begin(), classes.end(), className);
-            if (it != classes.end())
-            {
-                display_class_info(*it);
-            }
-            else
-            {
-                cout << "\033[1;31m    Class not found.\033[0m" << endl;
-            }
-        }
-        else if (searchChoice == 2)
-        {
-            string teacherName;
-            cout << "    Enter Teacher Name: ";
-            getline(cin, teacherName);
-
-            bool found = false;
-            for (const auto &teacher : vTea)
-            {
-                if (teacher.m_name == teacherName)
-                {
-                    display_class_info(teacher.m_class);
-                    found = true;
-                }
-            }
-            if (!found)
-            {
-                cout << "\033[1;31m    Teacher not found.\033[0m" << endl;
-            }
-        }
-        else
-        {
-            cout << "\033[1;31m    Invalid Choice. Please Try Again.\033[0m" << endl;
-        }
-
-        system("pause");
-        system("cls");
-    }
-
-    // Displays information of a class.
-    void display_class_info(const string &className)
-    {
-        int grade = 0;
-        if (isdigit(className[0]))
-        {
-            grade = className[0] - '0';
-        }
-
-        int studentCount = countStudentsInClass(vStu, className);
-        string teacherName = "Unknown";
-        for (const auto &teacher : vTea)
-        {
-            if (teacher.m_class == className)
-            {
-                teacherName = teacher.m_name;
-                break;
-            }
-        }
-        system("cls");
-        cout << "============================================================================" << endl;
-        cout << "                             CLASS INFORMATION                              " << endl;
-        cout << "============================================================================" << endl;
-        cout << "    " << left << setw(10) << "Grade" << setw(10) << "Class" << setw(30) << "Teacher Name" << setw(20) << "Student Quantity" << endl;
-        cout << "    " << left << setw(10) << grade << setw(10) << className << setw(30) << teacherName << setw(20) << studentCount << endl;
-        cout << "----------------------------------------------------------------------------" << endl;
     }
 
     // Adds a new subject to the system.
