@@ -655,7 +655,7 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
             cout << "============================================================================" << endl;
             cout << "Enter the student ID to update: ";
             cin >> studentId;
-
+            //find student
             auto studentIt = find_if(students.begin(), students.end(), [&](const StudentInfo& s) { return s.studentId == studentId && s.studentClass == this->m_class; });
             if (studentIt == students.end()) {
                 cout << "\033[1;31mStudent not found or not in your class. Please try again.\033[0m\n";
@@ -690,13 +690,13 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
                     int gradeOffset;
                     switch (termChoice) {
                     case 1:
-                        gradeOffset = 0;
+                        gradeOffset = 0;//set to zero
                         break;
                     case 2:
-                        gradeOffset = subjectsForClass.size();
+                        gradeOffset = subjectsForClass.size();//set the num of subject
                         break;
                     case 3:
-                        gradeOffset = 2 * subjectsForClass.size();
+                        gradeOffset = 2 * subjectsForClass.size();//set twice
                         break;
                     case 4:
                         return;
@@ -705,16 +705,16 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
                         return;
                     }
 
-                    StudentInfo& student = *studentIt;
+                    StudentInfo& student = *studentIt;// get a reference to the student object from the iterator
                     system("cls");
                     cout << "============================================================================" << endl;
                     cout << "                            UPDATE STUDENT MARKS" << endl;
                     cout << "============================================================================" << endl;
                     cout << "Current grades for " << studentId << ":\n";
                     for (size_t i = 0; i < subjectsForClass.size(); ++i) {
-                        int index = gradeOffset + i;
+                        int index = gradeOffset + i;// calculate the grade index based on the offset
                         cout << "[" << (i + 1) << "] " << subjectsForClass[i].second << ": ";
-                        if (index < student.grades.size()) {
+                        if (index < student.grades.size()) { // check if the index is within the student's grades size
                             if (student.grades[index] == -1.0f) {
                                 cout << "-\n";
                             } else {
@@ -771,7 +771,7 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
                     }
 
                     SubjectLinkedList subjectsLinkedList;
-                    convertSubjectsForClassToLinkedList(subjectsForClass, subjectsLinkedList);
+                    convertSubjectsForClassToLinkedList(subjectsForClass, subjectsLinkedList);//convert to linked list
                     saveStudentGradeAttendance(students, "gradeAttendance.txt", subjectsLinkedList);
 
                     char updateAnother;
