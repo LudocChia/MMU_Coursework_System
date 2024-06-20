@@ -71,4 +71,3 @@
 2|1221201048|Vanessa Cheong|048|Female|5D
 2|1221201049|William Tan|049|Male|1A
 2|1221201050|Xander Lim|050|Male|2A
-2|1221202050|Jacky Chan|123|Male|5A
