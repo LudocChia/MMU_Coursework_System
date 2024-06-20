@@ -1,2 +1,1 @@
-
-                subjectsForClass.push_back({subjectCode, subjectName});
+view_subjects

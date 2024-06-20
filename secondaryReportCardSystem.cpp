@@ -283,20 +283,18 @@ struct SubjectLinkedList
             break;
         }
 
+        SubjectNode *result = nullptr;
         if (condition)
         {
-            left->next = merge(left->next, right, criteria, ascending);
-            left->next->next = nullptr;
-            left->next = right;
-            return left;
+            result = left;
+            result->next = merge(left->next, right, criteria, ascending);
         }
         else
         {
-            right->next = merge(left, right->next, criteria, ascending);
-            right->next->next = nullptr;
-            right->next = left;
-            return right;
+            result = right;
+            result->next = merge(left, right->next, criteria, ascending);
         }
+        return result;
     }
 
     SubjectNode *getMiddle(SubjectNode *node)
@@ -3023,122 +3021,15 @@ private:
         } while (choice != 3);
     }
 
-    bool compareClasses(const pair<int, pair<string, int>> &a, const pair<int, pair<string, int>> &b, int criteria, bool ascending)
-    {
-        bool result = false;
-        switch (criteria)
-        {
-        case 1: // Grade
-            result = a.first < b.first;
-            break;
-        case 2: // Class
-            result = a.second.first < b.second.first;
-            break;
-        case 3: // Teacher Name
-            result = a.second.second < b.second.second;
-            break;
-        case 4: // Student Quantity
-            result = a.second.second < b.second.second;
-            break;
-        }
-        return ascending ? !result : result; // Reverse the comparison
-    }
-
-    // Quick Sort implementation
-    void quickSort(vector<pair<int, pair<string, int>>> &classes, int left, int right, int criteria, bool ascending)
-    {
-        if (left < right)
-        {
-            int pivotIndex = partition(classes, left, right, criteria, ascending);
-            quickSort(classes, left, pivotIndex - 1, criteria, ascending);
-            quickSort(classes, pivotIndex + 1, right, criteria, ascending);
-        }
-    }
-
-    int partition(vector<pair<int, pair<string, int>>> &classes, int left, int right, int criteria, bool ascending)
-    {
-        pair<int, pair<string, int>> pivot = classes[right];
-        int i = left - 1;
-        for (int j = left; j < right; j++)
-        {
-            if (compareClasses(classes[j], pivot, criteria, ascending))
-            {
-                i++;
-                swap(classes[i], classes[j]);
-            }
-        }
-        swap(classes[i + 1], classes[right]);
-        return i + 1;
-    }
-
-    // Manual swap function
-    void swap(pair<int, pair<string, int>> &a, pair<int, pair<string, int>> &b)
-    {
-        pair<int, pair<string, int>> temp = a;
-        a = b;
-        b = temp;
-    }
-
-    // Binary Search implementation
-    int binarySearch(const vector<pair<int, pair<string, int>>> &classes, const string &target, int criteria)
-    {
-        int left = 0;
-        int right = classes.size() - 1;
-
-        while (left <= right)
-        {
-            int mid = left + (right - left) / 2;
-
-            string current;
-            switch (criteria)
-            {
-            case 1: // Grade
-                current = to_string(classes[mid].first);
-                break;
-            case 2: // Class
-                current = classes[mid].second.first;
-                break;
-            case 3: // Teacher Name
-                current = classes[mid].second.second;
-                break;
-            }
-
-            if (current == target)
-            {
-                return mid;
-            }
-            else if (current < target)
-            {
-                left = mid + 1;
-            }
-            else
-            {
-                right = mid - 1;
-            }
-        }
-
-        return -1;
-    }
-
     // Displays the list of all classes.
     void view_all_classes_list()
     {
-        vector<pair<int, pair<string, int>>> classes;
+        vector<string> classes;
         for (const auto &teacher : vTea)
         {
-            bool exists = false;
-            for (const auto &classInfo : classes)
+            if (find(classes.begin(), classes.end(), teacher.m_class) == classes.end())
             {
-                if (classInfo.second.first == teacher.m_class)
-                {
-                    exists = true;
-                    break;
-                }
-            }
-            if (!exists)
-            {
-                int studentCount = countStudentsInClass(vStu, teacher.m_class);
-                classes.push_back(make_pair(teacher.m_class[0] - '0', make_pair(teacher.m_class, studentCount)));
+                classes.push_back(teacher.m_class);
             }
         }
 
@@ -3151,11 +3042,15 @@ private:
             cout << right << setw(70) << "Total Class: " << classes.size() << endl;
             cout << "    " << left << setw(10) << "Grade" << setw(10) << "Class" << setw(30) << "Teacher Name" << setw(20) << "Student Quantity" << endl;
 
-            for (const auto &classInfo : classes)
+            for (const auto &className : classes)
             {
-                int grade = classInfo.first;
-                const string &className = classInfo.second.first;
-                int studentCount = classInfo.second.second;
+                int grade = 0;
+                if (isdigit(className[0]))
+                {
+                    grade = className[0] - '0';
+                }
+
+                int studentCount = countStudentsInClass(vStu, className);
                 string teacherName = "Unknown";
                 for (const auto &teacher : vTea)
                 {
@@ -3165,7 +3060,6 @@ private:
                         break;
                     }
                 }
-
                 cout << "    " << left << setw(10) << grade << setw(10) << className << setw(30) << teacherName << setw(20) << studentCount << endl;
             }
 
@@ -3180,75 +3074,14 @@ private:
             switch (choice)
             {
             case 1:
-            {
-                int sortCriteria;
-                char sortOrder;
-                cout << "    Choose Sorting Criteria: " << endl;
-                cout << "    [1] Grade" << endl;
-                cout << "    [2] Class" << endl;
-                cout << "    [3] Teacher Name" << endl;
-                cout << "    [4] Student Quantity" << endl;
-                cout << "    Enter Choice: ";
-                cin >> sortCriteria;
-                cout << "    Choose Sorting Order (A for Ascending, D for Descending): ";
-                cin >> sortOrder;
-                system("cls");
-
-                bool ascending = (sortOrder == 'A' || sortOrder == 'a');
-                quickSort(classes, 0, classes.size() - 1, sortCriteria, ascending);
                 selection_sort(classes);
                 system("pause");
                 system("cls");
                 break;
-            }
             case 2:
-            {
-                int searchCriteria;
-                string target;
-                cout << "    Choose Searching Criteria: " << endl;
-                cout << "    [1] Grade" << endl;
-                cout << "    [2] Class" << endl;
-                cout << "    [3] Teacher Name" << endl;
-                cout << "    Enter Choice: ";
-                cin >> searchCriteria;
-                cin.ignore();
-                system("cls");
-
-                cout << "    Enter Search Target: ";
-                getline(cin, target);
-
-                int index = binarySearch(classes, target, searchCriteria);
-                if (index != -1)
-                {
-                    const auto &classInfo = classes[index];
-                    int grade = classInfo.first;
-                    const string &className = classInfo.second.first;
-                    int studentCount = classInfo.second.second;
-                    string teacherName = "Unknown";
-                    for (const auto &teacher : vTea)
-                    {
-                        if (teacher.m_class == className)
-                        {
-                            teacherName = teacher.m_name;
-                            break;
-                        }
-                    }
-
-                    cout << "----------------------------------------------------------------------------" << endl;
-                    cout << "    " << left << setw(10) << grade << setw(10) << className << setw(30) << teacherName << setw(20) << studentCount << endl;
-                    cout << "----------------------------------------------------------------------------" << endl;
-                }
-                else
-                {
-                    cout << "\033[1;31m    No match found.\033[0m" << endl;
-                }
-
-                system("pause");
-                system("cls");
+                search_classes_or_teachers(classes);
                 break;
-            }
             case 3:
-                system("cls");
                 return;
             default:
                 cout << "\033[1;31m    Invalid Choice. Please Try Again.\033[0m" << endl;
@@ -3625,7 +3458,7 @@ private:
         outFile.close();
     }
 
-    // Displays the list of subjects using merge sort for sorting directly on the linked list.
+    // Displays the list of subjects.
     void view_subjects()
     {
         int choice;
