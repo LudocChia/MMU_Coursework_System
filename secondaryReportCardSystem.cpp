@@ -972,7 +972,7 @@ void saveStudentAwards(const vector<StudentInfo> &students, const string &filena
             int sortChoice;
             cout << "Would you like to sort the students? [1] Yes [2] No: ";
             cin >> sortChoice;
-            if (sortChoice != 1) {
+            if (sortChoice != 1) { 
                 return;
             }
 
